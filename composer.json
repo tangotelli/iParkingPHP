@@ -1,4 +1,6 @@
 {
+    "name": "tangotelli/iparking",
+    "description": "Final master's project from Alvaro Tango Fernandez - MiW",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
