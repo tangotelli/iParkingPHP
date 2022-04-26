@@ -60,7 +60,7 @@
             "@auto-scripts"
         ],
         "test": [
-            "php bin/phpunit"
+            "@php bin/phpunit"
         ]
     },
     "conflict": {
