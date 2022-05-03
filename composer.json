@@ -9,6 +9,7 @@
         "php": ">=8.0.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-mongodb": "*",
         "friendsofphp/php-cs-fixer": "^3.8",
         "symfony/console": "6.0.*",
         "symfony/dotenv": "6.0.*",
