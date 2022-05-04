@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Repository;
+namespace App\Service;
 
 use App\Document\Parking;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
-class ParkingRepository
+class ParkingService
 {
     private DocumentManager $documentManager;
 
@@ -18,5 +18,10 @@ class ParkingRepository
     {
         $this->documentManager->persist($parking);
         $this->documentManager->flush();
+    }
+
+    public function get(string $id)
+    {
+        return $this->documentManager->getRepository(Parking::class)->find($id);
     }
 }

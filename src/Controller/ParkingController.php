@@ -4,22 +4,28 @@ namespace App\Controller;
 
 use App\Document\Location;
 use App\Document\Parking;
-use App\Repository\ParkingRepository;
+use App\Service\ParkingService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/parking")
  */
 class ParkingController extends AbstractController
 {
-    private ParkingRepository $parkingRepository;
+    private ParkingService $parkingService;
+    private Serializer $serializer;
 
-    public function __construct(ParkingRepository $parkingRepository)
+    public function __construct(ParkingService $parkingService)
     {
-        $this->parkingRepository = $parkingRepository;
+        $this->parkingService = $parkingService;
+        $this->serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
     }
 
     /**
@@ -36,8 +42,21 @@ class ParkingController extends AbstractController
         $parking->setStayFare($postData['stay_fare']);
         $location = new Location($postData['latitude'], $postData['longitude']);
         $parking->setLocation($location);
-        $this->parkingRepository->create($parking);
+        $this->parkingService->create($parking);
 
         return new JsonResponse(['Status' => 'OK', 'Parking ID' => json_encode($parking->getId())]);
+    }
+
+    /**
+     * @Route(path="/{parkingId}", methods={ Request::METHOD_GET })
+     */
+    public function get(Request $request, string $parkingId): JsonResponse
+    {
+        $parking = $this->parkingService->get($parkingId);
+        if (null == $parking) {
+            // error
+        }
+
+        return new JsonResponse($this->serializer->serialize($parking, JsonEncoder::FORMAT));
     }
 }
