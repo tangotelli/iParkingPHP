@@ -10,7 +10,9 @@
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-mongodb": "*",
+        "doctrine/mongodb-odm-bundle": "^4.4",
         "friendsofphp/php-cs-fixer": "^3.8",
+        "mongodb/mongodb": "^1.12",
         "symfony/console": "6.0.*",
         "symfony/dotenv": "6.0.*",
         "symfony/flex": "^2",
@@ -70,7 +72,7 @@
     },
     "extra": {
         "symfony": {
-            "allow-contrib": false,
+            "allow-contrib": "true",
             "require": "6.0.*"
         }
     },

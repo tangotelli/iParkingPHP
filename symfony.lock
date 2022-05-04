@@ -17,11 +17,42 @@
             "ref": "64d8583af5ea57b7afa4aba4b159907f3a148b05"
         }
     },
+    "doctrine/cache": {
+        "version": "2.1.1"
+    },
+    "doctrine/collections": {
+        "version": "1.6.8"
+    },
+    "doctrine/deprecations": {
+        "version": "v1.0.0"
+    },
+    "doctrine/event-manager": {
+        "version": "1.1.1"
+    },
     "doctrine/instantiator": {
         "version": "1.4.1"
     },
     "doctrine/lexer": {
         "version": "1.2.3"
+    },
+    "doctrine/mongodb-odm": {
+        "version": "2.3.3"
+    },
+    "doctrine/mongodb-odm-bundle": {
+        "version": "4.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "4.1",
+            "ref": "68562ca89de9f97a952535cd3eee49f5541b76a7"
+        },
+        "files": [
+            "./config/packages/doctrine_mongodb.yaml",
+            "./src/Document/.gitignore"
+        ]
+    },
+    "doctrine/persistence": {
+        "version": "2.5.2"
     },
     "friendsofphp/php-cs-fixer": {
         "version": "3.8",
@@ -34,6 +65,18 @@
         "files": [
             "./.php-cs-fixer.dist.php"
         ]
+    },
+    "friendsofphp/proxy-manager-lts": {
+        "version": "v1.0.10"
+    },
+    "jean85/pretty-package-versions": {
+        "version": "2.0.5"
+    },
+    "laminas/laminas-code": {
+        "version": "4.5.1"
+    },
+    "mongodb/mongodb": {
+        "version": "1.12.0"
     },
     "myclabs/deep-copy": {
         "version": "1.11.0"
@@ -183,6 +226,9 @@
     },
     "symfony/deprecation-contracts": {
         "version": "v3.0.1"
+    },
+    "symfony/doctrine-bridge": {
+        "version": "v6.0.8"
     },
     "symfony/dom-crawler": {
         "version": "v6.0.6"
