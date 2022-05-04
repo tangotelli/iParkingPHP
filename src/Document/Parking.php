@@ -31,7 +31,7 @@ class Parking
      */
     private float $stayFare;
     /**
-     * @MongoDB\@EmbedOne(targetDocument=Location::class)
+     * @MongoDB\EmbedOne(targetDocument=Location::class)
      */
     private Location $location;
 
