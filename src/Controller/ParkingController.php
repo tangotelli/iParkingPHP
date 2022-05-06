@@ -12,7 +12,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @Route("/parking")
@@ -43,15 +42,19 @@ class ParkingController extends AbstractController
         $location = new Location($postData['latitude'], $postData['longitude']);
         $parking->setLocation($location);
         $this->parkingService->create($parking);
-
-        return new JsonResponse(['Status' => 'OK', 'Parking ID' => json_encode($parking->getId())]);
+        if (null != $parking->getId()) {
+            return new JsonResponse(['Status' => 'OK', 'Parking ID' => json_encode($parking->getId())]);
+        } else {
+            return new JsonResponse(['Status' => 'KO'], 401);
+        }
     }
 
     /**
      * @Route(path="/{parkingId}", methods={ Request::METHOD_GET })
      */
-    public function get(Request $request, string $parkingId): JsonResponse
+    public function get(string $parkingId): JsonResponse
     {
+        /** @var Parking $parking */
         $parking = $this->parkingService->get($parkingId);
         if (null == $parking) {
             // error

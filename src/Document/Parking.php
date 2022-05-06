@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
  * @MongoDB\Document(db="iparking", collection="parkings")
- * @MongoDB\Index(keys={"coordinates"="2d"})
+ * @MongoDB\Index(keys={"location"="2d"})
  */
 class Parking
 {
