@@ -15,7 +15,7 @@ class User implements PasswordAuthenticatedUserInterface
      */
     private string $id;
     /**
-     * @MongoDB\Field(type="string", unique=true)
+     * @MongoDB\Field(type="string")
      */
     private string $email;
     /**
@@ -24,7 +24,6 @@ class User implements PasswordAuthenticatedUserInterface
     private string $name;
     /**
      * @MongoDB\Field(type="string")
-     * @Serializer\Exclude()
      */
     private string $password;
 
