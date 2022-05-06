@@ -2,10 +2,8 @@
 
 namespace App\Controller;
 
-use App\Document\Parking;
 use App\Document\Spot;
 use App\Document\Status;
-use App\Service\ParkingService;
 use App\Service\SpotService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,33 +18,22 @@ use Symfony\Component\Serializer\Serializer;
  */
 class SpotController extends AbstractController
 {
-    private ParkingService $parkingService;
     private SpotService $spotService;
     private Serializer $serializer;
 
-    public function __construct(ParkingService $parkingService, SpotService $spotService)
+    public function __construct(SpotService $spotService)
     {
-        $this->parkingService = $parkingService;
         $this->spotService = $spotService;
         $this->serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
     }
 
     /**
-     * @Route(path="/new", methods={ Request::METHOD_POST })
+     * @Route(path="/book/{parkingId}", methods={ Request::METHOD_PUT })
      */
-    public function create(Request $request): JsonResponse
+    public function bookSpot(string $parkingId): JsonResponse
     {
-        $body = $request->getContent();
-        $postData = json_decode((string) $body, true);
-        /** @var Parking $parking */
-        $parking = $this->parkingService->get($postData['parkingId']);
-        $spot = new Spot();
-        $spot->setCode($postData['spotCode']);
-        $spot->setParking($parking);
-        $spot->setStatus(Status::FREE());
-        $this->spotService->create($spot);
-        if (null != $spot->getId()) {
-            return new JsonResponse(['Status' => 'OK', 'Spot ID' => json_encode($spot->getId())]);
+        if ($this->spotService->bookSpot($parkingId)) {
+            return new JsonResponse(['Status' => 'OK']);
         } else {
             return new JsonResponse(['Status' => 'KO'], 401);
         }
