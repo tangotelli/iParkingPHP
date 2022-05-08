@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
@@ -37,25 +38,41 @@ class UserController extends AbstractController
         $user->setEmail($postData['email']);
         $user->setName($postData['name']);
         $user->setPassword($postData['password']);
-        $this->userService->signin($user);
-        if (null != $user->getId()) {
-            return new JsonResponse(['Status' => 'OK']);
+        $existingUser = $this->userService->findByEmail($postData['email']);
+        if (null != $existingUser) {
+            return new JsonResponse(['Status' => 'KO - User already exists'], 401);
         } else {
-            return new JsonResponse(['Status' => 'KO'], 401);
+            $this->userService->signin($user);
+
+            return new JsonResponse(
+                $this->serializer->serialize(
+                    $user,
+                    JsonEncoder::FORMAT,
+                    [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]));
         }
     }
 
     /**
      * @Route(path="/login", methods={ Request::METHOD_GET })
      */
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $email = (string) $request->query->get('email');
         $password = (string) $request->query->get('password');
-        if ($this->userService->login($email, $password)) {
-            return new JsonResponse(['Status' => 'OK']);
+        /** @var User $user */
+        $user = $this->userService->findByEmail($email);
+        if (null != $user) {
+            if ($this->userService->login($user, $password)) {
+                return new JsonResponse(
+                    $this->serializer->serialize(
+                        $user,
+                        JsonEncoder::FORMAT,
+                        [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]));
+            } else {
+                return new JsonResponse(['Status' => 'KO - Wrong credentials'], 401);
+            }
         } else {
-            return new JsonResponse(['Status' => 'KO'], 401);
+            return new JsonResponse(['Status' => 'KO - No user found with that email'], 404);
         }
     }
 }

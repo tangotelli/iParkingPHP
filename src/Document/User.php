@@ -4,6 +4,7 @@ namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
  * @MongoDB\Document(db="iparking", collection="users")
@@ -24,6 +25,7 @@ class User implements PasswordAuthenticatedUserInterface
     private string $name;
     /**
      * @MongoDB\Field(type="string")
+     * @Ignore
      */
     private string $password;
 

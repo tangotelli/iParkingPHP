@@ -19,27 +19,20 @@ class UserService
 
     public function signin(User $user)
     {
-        $existingUser = $this->documentManager->getRepository(User::class)
-            ->findOneBy(['email' => $user->getEmail()]);
-        if (null == $existingUser) {
-            $plainPassword = $user->getPassword();
-            $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
-            $this->documentManager->persist($user);
-            $this->documentManager->flush();
-        }
+        $plainPassword = $user->getPassword();
+        $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword));
+        $this->documentManager->persist($user);
+        $this->documentManager->flush();
     }
 
-    public function login(string $email, string $password): bool
+    public function login(User $user, string $password)
     {
-        /** @var User $user */
-        $user = $this->documentManager->getRepository(User::class)
-            ->findOneBy(['email' => $email]);
-        if (null != $user) {
-            if ($this->passwordHasher->isPasswordValid($user, $password)) {
-                return true;
-            }
-        }
+        return $this->passwordHasher->isPasswordValid($user, $password);
+    }
 
-        return false;
+    public function findByEmail(string $email)
+    {
+        return $this->documentManager->getRepository(User::class)
+            ->findOneBy(['email' => $email]);
     }
 }
