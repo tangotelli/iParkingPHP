@@ -17,6 +17,7 @@ doctrine_mongodb:
                     prefix: 'App\Document'
                     alias: App
     types:
+        my_datetime: App\Util\DatetimeType
         spot_status: App\Util\SpotStatusType
 
 when@prod:
