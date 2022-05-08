@@ -64,19 +64,19 @@ class VehicleController extends AbstractController
     /**
      * @Route(path="/get", methods={ Request::METHOD_GET })
      */
-    public function findByUserAndLicensePlate(Request $request): JsonResponse
+    public function findByUserAndNickname(Request $request): JsonResponse
     {
         $email = (string) $request->query->get('email');
-        $licensePlate = (string) $request->query->get('licensePlate');
+        $nickname = (string) $request->query->get('nickname');
         /** @var User $user */
         $user = $this->userService->findByEmail($email);
         if (null == $user) {
             return new JsonResponse(['Status' => 'KO - No user found with that email'], 404);
         }
         /** @var Vehicle $vehicle */
-        $vehicle = $this->vehicleService->findByUserAndLicensePlate($user, $licensePlate);
+        $vehicle = $this->vehicleService->findByUserAndNickname($user, $nickname);
         if (null == $vehicle) {
-            return new JsonResponse(['Status' => 'KO - No vehicle found with that license plate'], 404);
+            return new JsonResponse(['Status' => 'KO - No vehicle found with that nickname'], 404);
         } else {
             return new JsonResponse(
                 $this->serializer->serialize(
@@ -84,5 +84,23 @@ class VehicleController extends AbstractController
                     JsonEncoder::FORMAT,
                     [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]));
         }
+    }
+
+    /**
+     * @Route(path="/get/{email}", methods={ Request::METHOD_GET })
+     */
+    public function findByUser(string $email): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->userService->findByEmail($email);
+        if (null == $user) {
+            return new JsonResponse(['Status' => 'KO - No user found with that email'], 404);
+        }
+        $vehicles = $this->vehicleService->findByUser($user);
+        return new JsonResponse(
+                $this->serializer->serialize(
+                    $vehicles,
+                    JsonEncoder::FORMAT,
+                    [AbstractNormalizer::IGNORED_ATTRIBUTES => ['user']]));
     }
 }

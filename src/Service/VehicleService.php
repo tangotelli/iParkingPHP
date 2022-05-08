@@ -26,4 +26,16 @@ class VehicleService
         $this->documentManager->persist($vehicle);
         $this->documentManager->flush();
     }
+
+    public function findByUserAndNickname(User $user, string $nickname)
+    {
+        return $this->documentManager->getRepository(Vehicle::class)
+            ->findOneBy(['user' => $user, 'nickname' => $nickname]);
+    }
+
+    public function findByUser(User $user)
+    {
+        return $this->documentManager->getRepository(Vehicle::class)
+            ->findBy(['user' => $user]);
+    }
 }
