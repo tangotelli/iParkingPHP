@@ -60,4 +60,29 @@ class VehicleController extends AbstractController
                     [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]));
         }
     }
+
+    /**
+     * @Route(path="/get", methods={ Request::METHOD_GET })
+     */
+    public function findByUserAndLicensePlate(Request $request): JsonResponse
+    {
+        $email = (string) $request->query->get('email');
+        $licensePlate = (string) $request->query->get('licensePlate');
+        /** @var User $user */
+        $user = $this->userService->findByEmail($email);
+        if (null == $user) {
+            return new JsonResponse(['Status' => 'KO - No user found with that email'], 404);
+        }
+        /** @var Vehicle $vehicle */
+        $vehicle = $this->vehicleService->findByUserAndLicensePlate($user, $licensePlate);
+        if (null == $vehicle) {
+            return new JsonResponse(['Status' => 'KO - No vehicle found with that license plate'], 404);
+        } else {
+            return new JsonResponse(
+                $this->serializer->serialize(
+                    $vehicle,
+                    JsonEncoder::FORMAT,
+                    [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]));
+        }
+    }
 }
