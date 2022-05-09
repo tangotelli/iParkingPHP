@@ -3,12 +3,13 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use JsonSerializable;
 
 /**
  * @MongoDB\Document(db="iparking", collection="parkings")
  * @MongoDB\Index(keys={"location"="2d"})
  */
-class Parking
+class Parking implements JsonSerializable
 {
     /**
      * @MongoDB\Id(strategy="UUID", type="string")
@@ -88,5 +89,17 @@ class Parking
     public function setLocation(Location $location): void
     {
         $this->location = $location;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'Id' => $this->getId(),
+            'Name' => $this->getName(),
+            'Address' => $this->getAddress(),
+            'Booking Fare' => $this->getBookingFare(),
+            'Stay Fare' => $this->getStayFare(),
+            'Location' => $this->getLocation()->jsonSerialize(),
+        ];
     }
 }

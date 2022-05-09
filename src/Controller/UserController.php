@@ -8,10 +8,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * @Route("/user")
@@ -19,12 +15,10 @@ use Symfony\Component\Serializer\Serializer;
 class UserController extends AbstractController
 {
     private UserService $userService;
-    private Serializer $serializer;
 
     public function __construct(UserService $userService)
     {
         $this->userService = $userService;
-        $this->serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
     }
 
     /**
@@ -44,11 +38,7 @@ class UserController extends AbstractController
         } else {
             $this->userService->signin($user);
 
-            return new JsonResponse(
-                $this->serializer->serialize(
-                    $user,
-                    JsonEncoder::FORMAT,
-                    [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]));
+            return new JsonResponse($user->jsonSerialize());
         }
     }
 
@@ -63,11 +53,7 @@ class UserController extends AbstractController
         $user = $this->userService->findByEmail($email);
         if (null != $user) {
             if ($this->userService->login($user, $password)) {
-                return new JsonResponse(
-                    $this->serializer->serialize(
-                        $user,
-                        JsonEncoder::FORMAT,
-                        [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]));
+                return new JsonResponse($user->jsonSerialize());
             } else {
                 return new JsonResponse(['Status' => 'KO - Wrong credentials'], 401);
             }

@@ -10,10 +10,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * @Route("/vehicle")
@@ -22,13 +18,11 @@ class VehicleController extends AbstractController
 {
     private VehicleService $vehicleService;
     private UserService $userService;
-    private Serializer $serializer;
 
     public function __construct(VehicleService $vehicleService, UserService $userService)
     {
         $this->vehicleService = $vehicleService;
         $this->userService = $userService;
-        $this->serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
     }
 
     /**
@@ -53,11 +47,7 @@ class VehicleController extends AbstractController
         } else {
             $this->vehicleService->register($vehicle);
 
-            return new JsonResponse(
-                $this->serializer->serialize(
-                    $vehicle,
-                    JsonEncoder::FORMAT,
-                    [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]));
+            return new JsonResponse($vehicle->jsonSerialize());
         }
     }
 
@@ -78,11 +68,7 @@ class VehicleController extends AbstractController
         if (null == $vehicle) {
             return new JsonResponse(['Status' => 'KO - No vehicle found with that nickname'], 404);
         } else {
-            return new JsonResponse(
-                $this->serializer->serialize(
-                    $vehicle,
-                    JsonEncoder::FORMAT,
-                    [AbstractNormalizer::IGNORED_ATTRIBUTES => ['password']]));
+            return new JsonResponse($vehicle->jsonSerialize());
         }
     }
 
@@ -97,10 +83,9 @@ class VehicleController extends AbstractController
             return new JsonResponse(['Status' => 'KO - No user found with that email'], 404);
         }
         $vehicles = $this->vehicleService->findByUser($user);
-        return new JsonResponse(
-                $this->serializer->serialize(
-                    $vehicles,
-                    JsonEncoder::FORMAT,
-                    [AbstractNormalizer::IGNORED_ATTRIBUTES => ['user']]));
+        /** @var Vehicle $vehicle */
+        $dataArray = array_map(fn ($vehicle) => [$vehicle->jsonSerialize()], $vehicles);
+
+        return new JsonResponse($dataArray);
     }
 }

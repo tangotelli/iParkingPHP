@@ -3,11 +3,12 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use JsonSerializable;
 
 /**
  * @MongoDB\Document(db="iparking", collection="vehicles")
  */
-class Vehicle
+class Vehicle implements JsonSerializable
 {
     /**
      * @MongoDB\Id(strategy="UUID", type="string")
@@ -59,5 +60,15 @@ class Vehicle
     public function setUser(User $user): void
     {
         $this->user = $user;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'Id' => $this->getId(),
+            'Nickname' => $this->getNickname(),
+            'License Plate' => $this->getLicensePlate(),
+            'User' => $this->getUser()->getEmail(),
+        ];
     }
 }

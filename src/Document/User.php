@@ -3,13 +3,13 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use JsonSerializable;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
  * @MongoDB\Document(db="iparking", collection="users")
  */
-class User implements PasswordAuthenticatedUserInterface
+class User implements PasswordAuthenticatedUserInterface, JsonSerializable
 {
     /**
      * @MongoDB\Id(strategy="UUID", type="string")
@@ -25,7 +25,6 @@ class User implements PasswordAuthenticatedUserInterface
     private string $name;
     /**
      * @MongoDB\Field(type="string")
-     * @Ignore
      */
     private string $password;
 
@@ -62,5 +61,14 @@ class User implements PasswordAuthenticatedUserInterface
     public function setPassword(string $password): void
     {
         $this->password = $password;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'Id' => $this->getId(),
+            'Email' => $this->getEmail(),
+            'Name' => $this->getName(),
+        ];
     }
 }

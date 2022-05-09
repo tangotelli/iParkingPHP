@@ -3,10 +3,12 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use JsonSerializable;
+
 /**
  * @MongoDB\EmbeddedDocument()
  */
-class Location
+class Location implements JsonSerializable
 {
     /**
      * @MongoDB\Field(type="float")
@@ -41,5 +43,13 @@ class Location
     public function setLongitude(float $longitude): void
     {
         $this->longitude = $longitude;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'Latitude' => $this->getLatitude(),
+            'Longitude' => $this->getLongitude(),
+        ];
     }
 }

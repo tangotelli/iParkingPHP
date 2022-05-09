@@ -3,11 +3,12 @@
 namespace App\Document;
 
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
+use JsonSerializable;
 
 /**
  * @MongoDB\MappedSuperclass
  */
-abstract class Operation
+abstract class Operation implements JsonSerializable
 {
     /**
      * @MongoDB\Id(strategy="UUID", type="string")

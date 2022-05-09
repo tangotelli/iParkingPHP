@@ -13,4 +13,17 @@ class Booking extends Operation
     {
         $this->setPrice($this->getSpot()->getBookingFare());
     }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'Id' => $this->getId(),
+            'Parking Id' => $this->getSpot()->getParking()->getId(),
+            'Parking' => $this->getSpot()->getParking()->getName(),
+            'Spot' => $this->getSpot()->getCode(),
+            'Vehicle' => $this->getVehicle()->getNickname(),
+            'User' => $this->getVehicle()->getUser()->getEmail(),
+            'Price' => $this->getPrice(),
+        ];
+    }
 }

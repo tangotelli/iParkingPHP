@@ -10,9 +10,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 /**
  * @Route("/parking")
@@ -21,13 +18,11 @@ class ParkingController extends AbstractController
 {
     private ParkingService $parkingService;
     private SpotService $spotService;
-    private Serializer $serializer;
 
     public function __construct(ParkingService $parkingService, SpotService $spotService)
     {
         $this->parkingService = $parkingService;
         $this->spotService = $spotService;
-        $this->serializer = new Serializer([new ObjectNormalizer()], [new JsonEncoder()]);
     }
 
     /**
@@ -46,7 +41,7 @@ class ParkingController extends AbstractController
         $parking->setLocation($location);
         $this->parkingService->create($parking);
         if (null != $parking->getId()) {
-            return new JsonResponse(['Status' => 'OK', 'Parking ID' => json_encode($parking->getId())]);
+            return new JsonResponse($parking->jsonSerialize());
         } else {
             return new JsonResponse(['Status' => 'KO'], 401);
         }
@@ -60,10 +55,10 @@ class ParkingController extends AbstractController
         /** @var Parking $parking */
         $parking = $this->parkingService->get($parkingId);
         if (null == $parking) {
-            // error
+            return new JsonResponse(['Status' => 'KO - No parking found with that Id'], 404);
         }
 
-        return new JsonResponse($this->serializer->serialize($parking, JsonEncoder::FORMAT));
+        return new JsonResponse($parking->jsonSerialize());
     }
 
     /**
@@ -74,7 +69,7 @@ class ParkingController extends AbstractController
         $body = $request->getContent();
         $postData = json_decode((string) $body, true);
         if ($this->spotService->exists($postData['spotCode'], $postData['parkingId'])) {
-            return new JsonResponse(['Status' => 'KO'], 401);
+            return new JsonResponse(['Status' => 'KO - No parking found with that Id'], 404);
         }
         /** @var string $spotCode */
         $spotCode = $postData['spotCode'];
@@ -82,7 +77,7 @@ class ParkingController extends AbstractController
         $parking = $this->parkingService->get($postData['parkingId']);
         $spot = $this->spotService->create($parking, $spotCode);
         if (null != $spot->getId()) {
-            return new JsonResponse(['Status' => 'OK', 'Spot ID' => json_encode($spot->getId())]);
+            return new JsonResponse($spot->jsonSerialize());
         } else {
             return new JsonResponse(['Status' => 'KO'], 401);
         }
