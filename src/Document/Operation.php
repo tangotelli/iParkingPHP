@@ -29,6 +29,7 @@ abstract class Operation
      * @MongoDB\ReferenceOne(targetDocument=Vehicle::class, storeAs="id")
      */
     private Vehicle $vehicle;
+    private float $price;
 
     public function getId(): string
     {
@@ -75,5 +76,15 @@ abstract class Operation
         $this->vehicle = $vehicle;
     }
 
-    abstract public function calculatePrice(): float;
+    public function getPrice(): float
+    {
+        return $this->price;
+    }
+
+    public function setPrice(float $price): void
+    {
+        $this->price = $price;
+    }
+
+    abstract public function calculatePrice(): void;
 }

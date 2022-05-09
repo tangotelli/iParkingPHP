@@ -37,17 +37,26 @@ class SpotService
         return null != $spot;
     }
 
-    public function bookSpot(string $parkingId): bool
+    public function anySpotFree(string $parkingId): bool
     {
         /** @var Spot $spot */
         $spot = $this->documentManager->getRepository(Spot::class)
             ->findOneBy(['parking' => $parkingId, 'status' => Status::FREE()]);
         if (null != $spot) {
-            $spot->setStatus(Status::BOOKED());
-            $this->documentManager->flush();
             return true;
+        } else {
+            return false;
         }
+    }
 
-        return false;
+    public function bookSpot(string $parkingId): Spot
+    {
+        /** @var Spot $spot */
+        $spot = $this->documentManager->getRepository(Spot::class)
+            ->findOneBy(['parking' => $parkingId, 'status' => Status::FREE()]);
+        $spot->setStatus(Status::BOOKED());
+        $this->documentManager->flush();
+
+        return $spot;
     }
 }
