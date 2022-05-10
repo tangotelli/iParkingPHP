@@ -48,7 +48,7 @@ class ParkingController extends AbstractController
     }
 
     /**
-     * @Route(path="/{parkingId}", methods={ Request::METHOD_GET })
+     * @Route(path="/id/{parkingId}", methods={ Request::METHOD_GET })
      */
     public function get(string $parkingId): JsonResponse
     {
@@ -81,5 +81,17 @@ class ParkingController extends AbstractController
         } else {
             return new JsonResponse(['Status' => 'KO'], 401);
         }
+    }
+
+    /**
+     * @Route(path="/all", methods={ Request::METHOD_GET })
+     */
+    public function findAll(): JsonResponse
+    {
+        $parkings = $this->parkingService->findAll();
+        /** @var Parking $parking */
+        $dataArray = array_map(fn ($parking) => [$parking->jsonSerialize()], $parkings);
+
+        return new JsonResponse($dataArray);
     }
 }

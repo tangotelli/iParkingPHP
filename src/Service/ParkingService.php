@@ -24,4 +24,9 @@ class ParkingService
     {
         return $this->documentManager->getRepository(Parking::class)->find($id);
     }
+
+    public function findAll()
+    {
+        return $this->documentManager->getRepository(Parking::class)->findAll();
+    }
 }
