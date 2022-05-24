@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Document\Booking;
+use App\Document\Status;
 use App\Document\Stay;
 use App\Document\User;
 use App\Document\Vehicle;
@@ -52,17 +53,24 @@ class StayController extends AbstractController
         if (null == $vehicle) {
             return new JsonResponse(['Status' => 'KO - No vehicle found with that nickname'], 404);
         }
+        if ($this->stayService->existsCurrentStay($parkingId, $vehicle)) {
+            return new JsonResponse(['Status' => 'KO - You already have an active stay in this parking'], 401);
+        }
+        $stay = $this->findSpotAndBeginStay($user, $vehicle, $parkingId);
+
+        return new JsonResponse($stay->jsonSerialize());
+    }
+
+    private function findSpotAndBeginStay(User $user, Vehicle $vehicle, string $parkingId): Stay
+    {
         /** @var Booking $booking */
         $booking = $this->bookingService->findActiveBooking($user, $parkingId);
         if (null != $booking) {
             $spot = $booking->getSpot();
-            /** @var Stay $stay */
-            $stay = $this->stayService->beginStayFromBooking($spot, $vehicle);
-        } else {
-            /** @var Stay $stay */
-            $stay = $this->stayService->beginStay($parkingId, $vehicle);
+            if ($spot->getStatus() == Status::BOOKED()) {
+                return $this->stayService->beginStayFromBooking($spot, $vehicle);
+            }
         }
-
-        return new JsonResponse($stay->jsonSerialize());
+        return $this->stayService->beginStay($parkingId, $vehicle);
     }
 }

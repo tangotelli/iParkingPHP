@@ -93,4 +93,10 @@ class SpotService
 
         return $spot;
     }
+
+    public function findByParking(string $parkingId)
+    {
+        return $this->documentManager->getRepository(Spot::class)
+            ->findBy(['parking' => $parkingId]);
+    }
 }
