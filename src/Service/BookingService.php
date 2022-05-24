@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Document\Booking;
 use App\Document\Spot;
+use App\Document\User;
 use App\Document\Vehicle;
 use DateInterval;
 use Doctrine\ODM\MongoDB\DocumentManager;
@@ -12,16 +13,20 @@ class BookingService
 {
     private DocumentManager $documentManager;
     private SpotService $spotService;
+    private VehicleService $vehicleService;
 
-    public function __construct(DocumentManager $documentManager, SpotService $spotService)
+    public function __construct(DocumentManager $documentManager, SpotService $spotService,
+                                VehicleService $vehicleService)
     {
         $this->documentManager = $documentManager;
         $this->spotService = $spotService;
+        $this->vehicleService = $vehicleService;
     }
 
     public function bookSpot(string $parkingId, Vehicle $vehicle): Booking
     {
         $spot = $this->spotService->bookSpot($parkingId);
+
         return $this->create($spot, $vehicle);
     }
 
@@ -46,5 +51,22 @@ class BookingService
         $this->documentManager->flush();
 
         return $booking;
+    }
+
+    public function findActiveBooking(User $user, string $parkingId)
+    {
+        $vehicles = $this->vehicleService->findByUser($user);
+        if (null == $vehicles) {
+            return null;
+        }
+        $now = new \DateTime('now', new \DateTimeZone('Europe/Madrid'));
+        $queryBuilder = $this->documentManager->createQueryBuilder(Booking::class);
+        $queryBuilder->field('vehicle')->in($vehicles)
+                     ->field('start')->lte($now)
+                     ->field('end')->gte($now)
+                     ->limit(1);
+        $query = $queryBuilder->getQuery();
+
+        return $query->getSingleResult();
     }
 }

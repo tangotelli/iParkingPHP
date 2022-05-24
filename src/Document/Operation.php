@@ -21,7 +21,7 @@ abstract class Operation implements JsonSerializable
     /**
      * @MongoDB\Field(type="my_datetime")
      */
-    private \DateTime $end;
+    protected \DateTime $end;
     /**
      * @MongoDB\ReferenceOne(targetDocument=Spot::class, storeAs="id")
      */
@@ -30,7 +30,7 @@ abstract class Operation implements JsonSerializable
      * @MongoDB\ReferenceOne(targetDocument=Vehicle::class, storeAs="id")
      */
     private Vehicle $vehicle;
-    private float $price;
+    protected float $price;
 
     public function getId(): string
     {

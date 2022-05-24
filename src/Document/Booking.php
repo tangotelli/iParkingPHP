@@ -16,6 +16,7 @@ class Booking extends Operation
 
     public function jsonSerialize(): array
     {
+        $this->calculatePrice();
         return [
             'Id' => $this->getId(),
             'Parking Id' => $this->getSpot()->getParking()->getId(),

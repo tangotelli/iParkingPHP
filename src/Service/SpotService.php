@@ -40,8 +40,7 @@ class SpotService
     public function anySpotFree(string $parkingId): bool
     {
         /** @var Spot $spot */
-        $spot = $this->documentManager->getRepository(Spot::class)
-            ->findOneBy(['parking' => $parkingId, 'status' => Status::FREE()]);
+        $spot = $this->findFreeSpot($parkingId);
         if (null != $spot) {
             return true;
         } else {
@@ -52,9 +51,44 @@ class SpotService
     public function bookSpot(string $parkingId): Spot
     {
         /** @var Spot $spot */
-        $spot = $this->documentManager->getRepository(Spot::class)
-            ->findOneBy(['parking' => $parkingId, 'status' => Status::FREE()]);
+        $spot = $this->findFreeSpot($parkingId);
         $spot->setStatus(Status::BOOKED());
+        $this->documentManager->flush();
+
+        return $spot;
+    }
+
+    public function freeSpot(string $spotCode, string $parkingId)
+    {
+        /** @var Spot $spot */
+        $spot = $this->documentManager->getRepository(Spot::class)
+            ->findOneBy(['code' => $spotCode, 'parking' => $parkingId]);
+        $spot->setStatus(Status::FREE());
+        $this->documentManager->flush();
+    }
+
+    public function occupySpot(string $parkingId): Spot
+    {
+        /** @var Spot $spot */
+        $spot = $this->findFreeSpot($parkingId);
+        $spot->setStatus(Status::OCCUPIED());
+        $this->documentManager->flush();
+
+        return $spot;
+    }
+
+    private function findFreeSpot(string $parkingId)
+    {
+        return $this->documentManager->getRepository(Spot::class)
+            ->findOneBy(['parking' => $parkingId, 'status' => Status::FREE()]);
+    }
+
+    public function occupyBookedSpot(string $spotCode, string $parkingId): Spot
+    {
+        /** @var Spot $spot */
+        $spot = $this->documentManager->getRepository(Spot::class)
+            ->findOneBy(['code' => $spotCode, 'parking' => $parkingId]);
+        $spot->setStatus(Status::OCCUPIED());
         $this->documentManager->flush();
 
         return $spot;
