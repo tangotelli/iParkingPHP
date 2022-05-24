@@ -6,6 +6,7 @@ use App\Document\User;
 use App\Document\Vehicle;
 use App\Service\UserService;
 use App\Service\VehicleService;
+use App\Util\ControllerUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,18 +31,17 @@ class VehicleController extends AbstractController
      */
     public function register(Request $request)
     {
-        $vehicle = new Vehicle();
-        $body = $request->getContent();
-        $postData = json_decode((string) $body, true);
+        $requestData = ControllerUtils::getRequestData($request);
         /** @var User $user */
-        $user = $this->userService->findByEmail($postData['email']);
+        $user = $this->userService->findByEmail($requestData['email']);
         if (null == $user) {
             return new JsonResponse(['Status' => 'KO - No user found with that email'], 404);
         }
-        $vehicle->setNickname($postData['nickname']);
-        $vehicle->setLicensePlate($postData['licensePlate']);
+        $vehicle = new Vehicle();
+        $vehicle->setNickname($requestData['nickname']);
+        $vehicle->setLicensePlate($requestData['licensePlate']);
         $vehicle->setUser($user);
-        $existingVehicle = $this->vehicleService->findByUserAndLicensePlate($user, $postData['licensePlate']);
+        $existingVehicle = $this->vehicleService->findByUserAndLicensePlate($user, $requestData['licensePlate']);
         if (null != $existingVehicle) {
             return new JsonResponse(['Status' => 'KO - Vehicle already registered'], 401);
         } else {

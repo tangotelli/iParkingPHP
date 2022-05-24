@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Document\Booking;
-use App\Document\Spot;
 use App\Document\Stay;
 use App\Document\User;
 use App\Document\Vehicle;
@@ -11,6 +10,7 @@ use App\Service\BookingService;
 use App\Service\StayService;
 use App\Service\UserService;
 use App\Service\VehicleService;
+use App\Util\ControllerUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,17 +38,17 @@ class StayController extends AbstractController
     /**
      * @Route(path="/new", methods={ Request::METHOD_POST })
      */
-    public function beginStay(Request $request) {
-        $body = $request->getContent();
-        $postData = json_decode((string) $body, true);
-        $parkingId = $postData['parkingId'];
+    public function beginStay(Request $request)
+    {
+        $requestData = ControllerUtils::getRequestData($request);
+        $parkingId = $requestData['parkingId'];
         /** @var User $user */
-        $user = $this->userService->findByEmail($postData['email']);
+        $user = $this->userService->findByEmail($requestData['email']);
         if (null == $user) {
             return new JsonResponse(['Status' => 'KO - No user found with that email'], 404);
         }
         /** @var Vehicle $vehicle */
-        $vehicle = $this->vehicleService->findByUserAndNickname($user, $postData['vehicle']);
+        $vehicle = $this->vehicleService->findByUserAndNickname($user, $requestData['vehicle']);
         if (null == $vehicle) {
             return new JsonResponse(['Status' => 'KO - No vehicle found with that nickname'], 404);
         }
@@ -62,6 +62,7 @@ class StayController extends AbstractController
             /** @var Stay $stay */
             $stay = $this->stayService->beginStay($parkingId, $vehicle);
         }
+
         return new JsonResponse($stay->jsonSerialize());
     }
 }

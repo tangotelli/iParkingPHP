@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Document\User;
 use App\Service\UserService;
+use App\Util\ControllerUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,13 +27,12 @@ class UserController extends AbstractController
      */
     public function signin(Request $request): JsonResponse
     {
+        $requestData = ControllerUtils::getRequestData($request);
         $user = new User();
-        $body = $request->getContent();
-        $postData = json_decode((string) $body, true);
-        $user->setEmail($postData['email']);
-        $user->setName($postData['name']);
-        $user->setPassword($postData['password']);
-        $existingUser = $this->userService->findByEmail($postData['email']);
+        $user->setEmail($requestData['email']);
+        $user->setName($requestData['name']);
+        $user->setPassword($requestData['password']);
+        $existingUser = $this->userService->findByEmail($requestData['email']);
         if (null != $existingUser) {
             return new JsonResponse(['Status' => 'KO - User already exists'], 401);
         } else {

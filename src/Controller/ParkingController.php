@@ -6,6 +6,7 @@ use App\Document\Location;
 use App\Document\Parking;
 use App\Service\ParkingService;
 use App\Service\SpotService;
+use App\Util\ControllerUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -66,15 +67,14 @@ class ParkingController extends AbstractController
      */
     public function createSpot(Request $request): JsonResponse
     {
-        $body = $request->getContent();
-        $postData = json_decode((string) $body, true);
-        if ($this->spotService->exists($postData['spotCode'], $postData['parkingId'])) {
+        $requestData = ControllerUtils::getRequestData($request);
+        if ($this->spotService->exists($requestData['spotCode'], $requestData['parkingId'])) {
             return new JsonResponse(['Status' => 'KO - No parking found with that Id'], 404);
         }
         /** @var string $spotCode */
-        $spotCode = $postData['spotCode'];
+        $spotCode = $requestData['spotCode'];
         /** @var Parking $parking */
-        $parking = $this->parkingService->get($postData['parkingId']);
+        $parking = $this->parkingService->get($requestData['parkingId']);
         $spot = $this->spotService->create($parking, $spotCode);
         if (null != $spot->getId()) {
             return new JsonResponse($spot->jsonSerialize());
