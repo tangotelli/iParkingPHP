@@ -10,6 +10,7 @@ use App\Util\ControllerUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -35,7 +36,8 @@ class VehicleController extends AbstractController
         /** @var User $user */
         $user = $this->userService->findByEmail($requestData['email']);
         if (null == $user) {
-            return new JsonResponse(['Status' => 'KO - No user found with that email'], 404);
+            return ControllerUtils::errorResponse('No user found with that email',
+                Response::HTTP_NOT_FOUND);
         }
         $vehicle = new Vehicle();
         $vehicle->setNickname($requestData['nickname']);
@@ -43,7 +45,8 @@ class VehicleController extends AbstractController
         $vehicle->setUser($user);
         $existingVehicle = $this->vehicleService->findByUserAndLicensePlate($user, $requestData['licensePlate']);
         if (null != $existingVehicle) {
-            return new JsonResponse(['Status' => 'KO - Vehicle already registered'], 401);
+            return ControllerUtils::errorResponse('Vehicle already registered',
+                Response::HTTP_BAD_REQUEST);
         } else {
             $this->vehicleService->register($vehicle);
 
@@ -61,12 +64,14 @@ class VehicleController extends AbstractController
         /** @var User $user */
         $user = $this->userService->findByEmail($email);
         if (null == $user) {
-            return new JsonResponse(['Status' => 'KO - No user found with that email'], 404);
+            return ControllerUtils::errorResponse('No user found with that email',
+                Response::HTTP_NOT_FOUND);
         }
         /** @var Vehicle $vehicle */
         $vehicle = $this->vehicleService->findByUserAndNickname($user, $nickname);
         if (null == $vehicle) {
-            return new JsonResponse(['Status' => 'KO - No vehicle found with that nickname'], 404);
+            return ControllerUtils::errorResponse('No vehicle found with that nickname',
+                Response::HTTP_NOT_FOUND);
         } else {
             return new JsonResponse($vehicle->jsonSerialize());
         }
@@ -80,7 +85,8 @@ class VehicleController extends AbstractController
         /** @var User $user */
         $user = $this->userService->findByEmail($email);
         if (null == $user) {
-            return new JsonResponse(['Status' => 'KO - No user found with that email'], 404);
+            return ControllerUtils::errorResponse('No user found with that email',
+                Response::HTTP_NOT_FOUND);
         }
         $vehicles = $this->vehicleService->findByUser($user);
         /** @var Vehicle $vehicle */

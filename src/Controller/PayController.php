@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Util\ControllerUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -21,9 +23,10 @@ class PayController extends AbstractController
     {
         $random = random_int(1, 10);
         if (0 == $random % self::ODDS_DENOMINATOR) {
-            return new JsonResponse(['Status' => 'KO - Payment failed'], 404);
+            return ControllerUtils::errorResponse('Payment failed',
+                Response::HTTP_INTERNAL_SERVER_ERROR);
         } else {
-            return new JsonResponse(['Status' => 'OK - Payment succeeded'], 200);
+            return new JsonResponse(['Message' => 'Payment succeeded'], 200);
         }
     }
 }

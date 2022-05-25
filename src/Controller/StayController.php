@@ -15,6 +15,7 @@ use App\Util\ControllerUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -46,15 +47,18 @@ class StayController extends AbstractController
         /** @var User $user */
         $user = $this->userService->findByEmail($requestData['email']);
         if (null == $user) {
-            return new JsonResponse(['Status' => 'KO - No user found with that email'], 404);
+            return ControllerUtils::errorResponse('No user found with that email',
+                Response::HTTP_NOT_FOUND);
         }
         /** @var Vehicle $vehicle */
         $vehicle = $this->vehicleService->findByUserAndNickname($user, $requestData['vehicle']);
         if (null == $vehicle) {
-            return new JsonResponse(['Status' => 'KO - No vehicle found with that nickname'], 404);
+            return ControllerUtils::errorResponse('No vehicle found with that nickname',
+                Response::HTTP_NOT_FOUND);
         }
         if ($this->stayService->existsCurrentStay($parkingId, $vehicle)) {
-            return new JsonResponse(['Status' => 'KO - You already have an active stay in this parking'], 401);
+            return ControllerUtils::errorResponse('You already have an active stay in this parking',
+                Response::HTTP_FORBIDDEN);
         }
         $stay = $this->findSpotAndBeginStay($user, $vehicle, $parkingId);
 

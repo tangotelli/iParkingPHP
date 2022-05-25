@@ -8,6 +8,7 @@ use App\Util\ControllerUtils;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -34,7 +35,8 @@ class UserController extends AbstractController
         $user->setPassword($requestData['password']);
         $existingUser = $this->userService->findByEmail($requestData['email']);
         if (null != $existingUser) {
-            return new JsonResponse(['Status' => 'KO - User already exists'], 401);
+            return ControllerUtils::errorResponse('User already exists',
+                Response::HTTP_BAD_REQUEST);
         } else {
             $this->userService->signin($user);
 
@@ -55,10 +57,12 @@ class UserController extends AbstractController
             if ($this->userService->login($user, $password)) {
                 return new JsonResponse($user->jsonSerialize());
             } else {
-                return new JsonResponse(['Status' => 'KO - Wrong credentials'], 401);
+                return ControllerUtils::errorResponse('Wrong credentials given',
+                    Response::HTTP_UNAUTHORIZED);
             }
         } else {
-            return new JsonResponse(['Status' => 'KO - No user found with that email'], 404);
+            return ControllerUtils::errorResponse('Wrong credentials given',
+                Response::HTTP_UNAUTHORIZED);
         }
     }
 }
