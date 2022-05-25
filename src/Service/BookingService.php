@@ -59,14 +59,34 @@ class BookingService
         if (null == $vehicles) {
             return null;
         }
+        $spots = $this->spotService->findByParking($parkingId);
         $now = new \DateTime('now', new \DateTimeZone('Europe/Madrid'));
         $queryBuilder = $this->documentManager->createQueryBuilder(Booking::class);
         $queryBuilder->field('vehicle')->in($vehicles)
+                     ->field('spot')->in($spots)
                      ->field('start')->lte($now)
                      ->field('end')->gte($now)
                      ->limit(1);
         $query = $queryBuilder->getQuery();
 
         return $query->getSingleResult();
+    }
+
+    public function existsActiveBooking(mixed $parkingId, Vehicle $vehicle): bool
+    {
+        $spots = $this->spotService->findByParking($parkingId);
+        $now = new \DateTime('now', new \DateTimeZone('Europe/Madrid'));
+        $queryBuilder = $this->documentManager->createQueryBuilder(Booking::class);
+        $queryBuilder->field('spot')->in($spots)
+            ->field('vehicle')->equals($vehicle)
+            ->field('start')->lte($now)
+            ->field('end')->gte($now)
+            ->limit(1);
+        $query = $queryBuilder->getQuery();
+        if (null != $query->getSingleResult()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

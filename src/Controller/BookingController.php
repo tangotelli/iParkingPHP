@@ -50,6 +50,10 @@ class BookingController extends AbstractController
             return ControllerUtils::errorResponse('No vehicle found with that nickname',
                 Response::HTTP_NOT_FOUND);
         }
+        if ($this->bookingService->existsActiveBooking($parkingId, $vehicle)) {
+            return ControllerUtils::errorResponse('You already have an active booking in this parking',
+                Response::HTTP_FORBIDDEN);
+        }
         if ($this->bookingService->anySpotFree($parkingId)) {
             $booking = $this->bookingService->bookSpot($parkingId, $vehicle);
 

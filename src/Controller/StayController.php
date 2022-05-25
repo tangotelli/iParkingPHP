@@ -56,7 +56,7 @@ class StayController extends AbstractController
             return ControllerUtils::errorResponse('No vehicle found with that nickname',
                 Response::HTTP_NOT_FOUND);
         }
-        if ($this->stayService->existsCurrentStay($parkingId, $vehicle)) {
+        if ($this->stayService->existsActiveStay($parkingId, $vehicle)) {
             return ControllerUtils::errorResponse('You already have an active stay in this parking',
                 Response::HTTP_FORBIDDEN);
         }

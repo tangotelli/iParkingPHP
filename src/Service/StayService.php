@@ -56,7 +56,7 @@ class StayService
         return $stay;
     }
 
-    public function existsCurrentStay(string $parkingId, Vehicle $vehicle): bool
+    public function existsActiveStay(string $parkingId, Vehicle $vehicle): bool
     {
         $spots = $this->spotService->findByParking($parkingId);
         $now = new \DateTime('now', new \DateTimeZone('Europe/Madrid'));
