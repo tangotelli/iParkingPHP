@@ -61,6 +61,8 @@ class StayController extends AbstractController
                 Response::HTTP_FORBIDDEN);
         }
         $stay = $this->findSpotAndBeginStay($user, $vehicle, $parkingId);
+        $stay->setEnd($stay->getStart());
+        $stay->setPrice(0.0);
 
         return new JsonResponse($stay->jsonSerialize());
     }
@@ -75,6 +77,23 @@ class StayController extends AbstractController
                 return $this->stayService->beginStayFromBooking($spot, $vehicle);
             }
         }
+
         return $this->stayService->beginStay($parkingId, $vehicle);
+    }
+
+    /**
+     * @Route(path="/end/{stayId}", methods={ Request::METHOD_PUT })
+     */
+    public function endStay(string $stayId): JsonResponse
+    {
+        /** @var Stay $stay */
+        $stay = $this->stayService->get($stayId);
+        if (null == $stay) {
+            return ControllerUtils::errorResponse('No stay found with that id',
+                Response::HTTP_NOT_FOUND);
+        }
+        $stay = $this->stayService->endStay($stay);
+
+        return new JsonResponse($stay->jsonSerialize());
     }
 }

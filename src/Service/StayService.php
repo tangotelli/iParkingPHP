@@ -44,10 +44,8 @@ class StayService
         return $stay;
     }
 
-    public function endStay(string $id): Stay
+    public function endStay(Stay $stay): Stay
     {
-        /** @var Stay $stay */
-        $stay = $this->documentManager->getRepository(Stay::class)->find($id);
         $this->spotService->freeSpot($stay->getSpot()->getCode(), $stay->getSpot()->getParking()->getId());
         $stay->setEnd(new \DateTime('now', new \DateTimeZone('Europe/Madrid')));
         $stay->calculatePrice();
@@ -72,5 +70,10 @@ class StayService
         } else {
             return false;
         }
+    }
+
+    public function get(string $stayId)
+    {
+        return $this->documentManager->getRepository(Stay::class)->find($stayId);
     }
 }

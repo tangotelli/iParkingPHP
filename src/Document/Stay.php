@@ -11,7 +11,7 @@ class Stay extends Operation
 {
     public function calculatePrice(): void
     {
-        $this->setPrice($this->minutesPassed() * $this->getSpot()->getStayFare());
+        $this->setPrice(abs($this->minutesPassed() * $this->getSpot()->getStayFare()));
     }
 
     public function jsonSerialize()
@@ -24,13 +24,13 @@ class Stay extends Operation
             'Vehicle' => $this->getVehicle()->getNickname(),
             'User' => $this->getVehicle()->getUser()->getEmail(),
             'Beginning' => $this->getStart()->format('d/m/Y H:i:s'),
-            /*'End' => null != $this->end ? $this->getEnd()->format('d/m/Y H:i:s') : 'null',
-            'Price' => null != $this->price ? $this->getPrice() : 'null',*/
+            'End' => $this->start != $this->end ? $this->getEnd()->format('d/m/Y H:i:s') : 'null',
+            'Price' => null != $this->price ? $this->getPrice() : 'null',
         ];
     }
 
     private function minutesPassed(): float|int
     {
-        return ($this->getStart()->getTimestamp() - $this->getEnd()->getTimestamp()) / 60;
+        return floor(($this->getEnd()->getTimestamp() - $this->getStart()->getTimestamp()) / 60);
     }
 }

@@ -17,7 +17,7 @@ abstract class Operation implements JsonSerializable
     /**
      * @MongoDB\Field(type="my_datetime")
      */
-    private \DateTime $start;
+    protected \DateTime $start;
     /**
      * @MongoDB\Field(type="my_datetime")
      */

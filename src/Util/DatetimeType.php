@@ -12,7 +12,7 @@ class DatetimeType extends Type
 
     public function convertToPHPValue($value): \DateTime
     {
-        return $value->toDatetime();
+        return $value->toDatetime()->setTimezone(new \DateTimeZone('Europe/Madrid'));
     }
 
     public function convertToDatabaseValue($value): UTCDateTime
