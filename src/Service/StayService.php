@@ -20,14 +20,14 @@ class StayService
 
     public function beginStay(string $parkingId, Vehicle $vehicle): Stay
     {
-        $spot = $this->spotService->occupySpot($parkingId);
+        $spot = $this->spotService->occupyFreeSpot($parkingId);
 
         return $this->create($spot, $vehicle);
     }
 
     public function beginStayFromBooking(Spot $spot, Vehicle $vehicle): Stay
     {
-        $spot = $this->spotService->occupyBookedSpot($spot->getCode(), $spot->getParking()->getId());
+        $spot = $this->spotService->occupySpot($spot->getCode(), $spot->getParking()->getId());
 
         return $this->create($spot, $vehicle);
     }
@@ -75,5 +75,20 @@ class StayService
     public function get(string $stayId)
     {
         return $this->documentManager->getRepository(Stay::class)->find($stayId);
+    }
+
+    public function resumeStay(Stay $stay): Stay
+    {
+        $this->spotService->occupySpot($stay->getSpot()->getCode(), $stay->getSpot()->getParking()->getId());
+        $queryBuilder = $this->documentManager->createQueryBuilder(Stay::class);
+        $queryBuilder->updateOne()
+            ->field('id')->equals($stay->getId())
+            ->field('end')->unsetField()
+            ->getQuery()
+            ->execute();
+        $stay->setPrice(0.0);
+        $this->documentManager->flush();
+
+        return $stay;
     }
 }

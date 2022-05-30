@@ -96,4 +96,21 @@ class StayController extends AbstractController
 
         return new JsonResponse($stay->jsonSerialize());
     }
+
+    /**
+     * @Route(path="/resume/{stayId}", methods={ Request::METHOD_PUT })
+     */
+    public function resumeStay(string $stayId) {
+        /** @var Stay $stay */
+        $stay = $this->stayService->get($stayId);
+        if (null == $stay) {
+            return ControllerUtils::errorResponse('No stay found with that id',
+                Response::HTTP_NOT_FOUND);
+        }
+        $stay = $this->stayService->resumeStay($stay);
+        $stay->setEnd($stay->getStart());
+        $stay->setPrice(0.0);
+
+        return new JsonResponse($stay->jsonSerialize());
+    }
 }

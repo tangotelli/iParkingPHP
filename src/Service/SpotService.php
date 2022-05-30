@@ -67,7 +67,7 @@ class SpotService
         $this->documentManager->flush();
     }
 
-    public function occupySpot(string $parkingId): Spot
+    public function occupyFreeSpot(string $parkingId): Spot
     {
         /** @var Spot $spot */
         $spot = $this->findFreeSpot($parkingId);
@@ -83,7 +83,7 @@ class SpotService
             ->findOneBy(['parking' => $parkingId, 'status' => Status::FREE()]);
     }
 
-    public function occupyBookedSpot(string $spotCode, string $parkingId): Spot
+    public function occupySpot(string $spotCode, string $parkingId): Spot
     {
         /** @var Spot $spot */
         $spot = $this->documentManager->getRepository(Spot::class)
