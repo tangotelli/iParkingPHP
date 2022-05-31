@@ -85,10 +85,7 @@ class BookingService
             ->field('end')->gte($now)
             ->limit(1);
         $query = $queryBuilder->getQuery();
-        if (null != $query->getSingleResult()) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return null != $query->getSingleResult();
     }
 }

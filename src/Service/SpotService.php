@@ -41,11 +41,7 @@ class SpotService
     {
         /** @var Spot $spot */
         $spot = $this->findFreeSpot($parkingId);
-        if (null != $spot) {
-            return true;
-        } else {
-            return false;
-        }
+        return null != $spot;
     }
 
     public function bookSpot(string $parkingId): Spot

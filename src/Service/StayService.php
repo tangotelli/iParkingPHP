@@ -67,11 +67,8 @@ class StayService
             ->field('end')->exists(false)
             ->limit(1);
         $query = $queryBuilder->getQuery();
-        if (null != $query->getSingleResult()) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return null != $query->getSingleResult();
     }
 
     public function get(string $stayId)
