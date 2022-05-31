@@ -94,4 +94,18 @@ class VehicleController extends AbstractController
 
         return new JsonResponse($dataArray);
     }
+
+    /**
+     * @Route(path="/delete/{id}", methods={ Request::METHOD_DELETE })
+     */
+    public function delete(string $id) {
+        /** @var Vehicle $vehicle */
+        $vehicle = $this->vehicleService->find($id);
+        if (null == $vehicle) {
+            return ControllerUtils::errorResponse('No vehicle found with that id',
+                Response::HTTP_NOT_FOUND);
+        }
+        $this->vehicleService->delete($vehicle);
+        return new JsonResponse('Vehicle deleted', Response::HTTP_NO_CONTENT);
+    }
 }

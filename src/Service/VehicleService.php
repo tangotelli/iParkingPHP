@@ -38,4 +38,15 @@ class VehicleService
         return $this->documentManager->getRepository(Vehicle::class)
             ->findBy(['user' => $user]);
     }
+
+    public function find(string $id)
+    {
+        return $this->documentManager->getRepository(Vehicle::class)->find($id);
+    }
+
+    public function delete(Vehicle $vehicle)
+    {
+        $this->documentManager->remove($vehicle);
+        $this->documentManager->flush();
+    }
 }
