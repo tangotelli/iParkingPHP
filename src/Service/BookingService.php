@@ -15,6 +15,8 @@ class BookingService
     private SpotService $spotService;
     private VehicleService $vehicleService;
 
+    private const TIMEZONE = 'Europe/Madrid';
+
     public function __construct(DocumentManager $documentManager, SpotService $spotService,
                                 VehicleService $vehicleService)
     {
@@ -38,8 +40,8 @@ class BookingService
     private function create(Spot $spot, Vehicle $vehicle): Booking
     {
         $booking = new Booking();
-        $start = new \DateTime('now', new \DateTimeZone('Europe/Madrid'));
-        $end = new \DateTime('now', new \DateTimeZone('Europe/Madrid'));
+        $start = new \DateTime('now', new \DateTimeZone(self::TIMEZONE));
+        $end = new \DateTime('now', new \DateTimeZone(self::TIMEZONE));
         $interval = new DateInterval('PT1H');
         $end->add($interval);
         $booking->setStart($start);
@@ -60,7 +62,7 @@ class BookingService
             return null;
         }
         $spots = $this->spotService->findByParking($parkingId);
-        $now = new \DateTime('now', new \DateTimeZone('Europe/Madrid'));
+        $now = new \DateTime('now', new \DateTimeZone(self::TIMEZONE));
         $queryBuilder = $this->documentManager->createQueryBuilder(Booking::class);
         $queryBuilder->field('vehicle')->in($vehicles)
                      ->field('spot')->in($spots)
@@ -75,7 +77,7 @@ class BookingService
     public function existsActiveBooking(mixed $parkingId, Vehicle $vehicle): bool
     {
         $spots = $this->spotService->findByParking($parkingId);
-        $now = new \DateTime('now', new \DateTimeZone('Europe/Madrid'));
+        $now = new \DateTime('now', new \DateTimeZone(self::TIMEZONE));
         $queryBuilder = $this->documentManager->createQueryBuilder(Booking::class);
         $queryBuilder->field('spot')->in($spots)
             ->field('vehicle')->equals($vehicle)

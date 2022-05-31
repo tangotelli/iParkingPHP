@@ -12,6 +12,8 @@ class StayService
     private DocumentManager $documentManager;
     private SpotService $spotService;
 
+    private const TIMEZONE = 'Europe/Madrid';
+
     public function __construct(DocumentManager $documentManager, SpotService $spotService)
     {
         $this->documentManager = $documentManager;
@@ -35,7 +37,7 @@ class StayService
     private function create(Spot $spot, Vehicle $vehicle)
     {
         $stay = new Stay();
-        $stay->setStart(new \DateTime('now', new \DateTimeZone('Europe/Madrid')));
+        $stay->setStart(new \DateTime('now', new \DateTimeZone(self::TIMEZONE)));
         $stay->setSpot($spot);
         $stay->setVehicle($vehicle);
         $this->documentManager->persist($stay);
@@ -47,7 +49,7 @@ class StayService
     public function endStay(Stay $stay): Stay
     {
         $this->spotService->freeSpot($stay->getSpot()->getCode(), $stay->getSpot()->getParking()->getId());
-        $stay->setEnd(new \DateTime('now', new \DateTimeZone('Europe/Madrid')));
+        $stay->setEnd(new \DateTime('now', new \DateTimeZone(self::TIMEZONE)));
         $stay->calculatePrice();
         $this->documentManager->flush();
 
@@ -57,7 +59,7 @@ class StayService
     public function existsActiveStay(string $parkingId, Vehicle $vehicle): bool
     {
         $spots = $this->spotService->findByParking($parkingId);
-        $now = new \DateTime('now', new \DateTimeZone('Europe/Madrid'));
+        $now = new \DateTime('now', new \DateTimeZone(self::TIMEZONE));
         $queryBuilder = $this->documentManager->createQueryBuilder(Stay::class);
         $queryBuilder->field('spot')->in($spots)
             ->field('vehicle')->equals($vehicle)
