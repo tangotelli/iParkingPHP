@@ -8,6 +8,7 @@ use App\Service\BookingService;
 use App\Service\UserService;
 use App\Service\VehicleService;
 use App\Util\ControllerUtils;
+use App\Util\MessageIndex;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,17 +42,17 @@ class BookingController extends AbstractController
         /** @var User $user */
         $user = $this->userService->findByEmail($requestData['email']);
         if (null == $user) {
-            return ControllerUtils::errorResponse('No user found with that email',
+            return ControllerUtils::errorResponse(MessageIndex::USER_NOT_FOUND,
                 Response::HTTP_NOT_FOUND);
         }
         /** @var Vehicle $vehicle */
         $vehicle = $this->vehicleService->findByUserAndNickname($user, $requestData['vehicle']);
         if (null == $vehicle) {
-            return ControllerUtils::errorResponse('No vehicle found with that nickname',
+            return ControllerUtils::errorResponse(MessageIndex::VEHICLE_NOT_FOUND_NICKNAME,
                 Response::HTTP_NOT_FOUND);
         }
         if ($this->bookingService->existsActiveBooking($parkingId, $vehicle)) {
-            return ControllerUtils::errorResponse('You already have an active booking in this parking',
+            return ControllerUtils::errorResponse(MessageIndex::BOOKING_ALREADY_ACTIVE,
                 Response::HTTP_FORBIDDEN);
         }
         if ($this->bookingService->anySpotFree($parkingId)) {
@@ -59,7 +60,7 @@ class BookingController extends AbstractController
 
             return new JsonResponse($booking->jsonSerialize());
         } else {
-            return ControllerUtils::errorResponse('No free spots in the given parking',
+            return ControllerUtils::errorResponse(MessageIndex::NO_FREE_SPOTS,
                 Response::HTTP_PRECONDITION_FAILED);
         }
     }

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Document\User;
 use App\Service\UserService;
 use App\Util\ControllerUtils;
+use App\Util\MessageIndex;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,7 +36,7 @@ class UserController extends AbstractController
         $user->setPassword($requestData['password']);
         $existingUser = $this->userService->findByEmail($requestData['email']);
         if (null != $existingUser) {
-            return ControllerUtils::errorResponse('User already exists',
+            return ControllerUtils::errorResponse(MessageIndex::USER_ALREADY_REGISTERED,
                 Response::HTTP_BAD_REQUEST);
         } else {
             $this->userService->signin($user);
@@ -57,11 +58,11 @@ class UserController extends AbstractController
             if ($this->userService->login($user, $password)) {
                 return new JsonResponse($user->jsonSerialize());
             } else {
-                return ControllerUtils::errorResponse('Wrong credentials given',
+                return ControllerUtils::errorResponse(MessageIndex::WRONG_CREDENTIALS,
                     Response::HTTP_UNAUTHORIZED);
             }
         } else {
-            return ControllerUtils::errorResponse('Wrong credentials given',
+            return ControllerUtils::errorResponse(MessageIndex::WRONG_CREDENTIALS,
                 Response::HTTP_UNAUTHORIZED);
         }
     }

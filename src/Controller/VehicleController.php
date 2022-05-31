@@ -7,6 +7,7 @@ use App\Document\Vehicle;
 use App\Service\UserService;
 use App\Service\VehicleService;
 use App\Util\ControllerUtils;
+use App\Util\MessageIndex;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,7 +37,7 @@ class VehicleController extends AbstractController
         /** @var User $user */
         $user = $this->userService->findByEmail($requestData['email']);
         if (null == $user) {
-            return ControllerUtils::errorResponse('No user found with that email',
+            return ControllerUtils::errorResponse(MessageIndex::USER_NOT_FOUND,
                 Response::HTTP_NOT_FOUND);
         }
         $vehicle = new Vehicle();
@@ -45,7 +46,7 @@ class VehicleController extends AbstractController
         $vehicle->setUser($user);
         $existingVehicle = $this->vehicleService->findByUserAndLicensePlate($user, $requestData['licensePlate']);
         if (null != $existingVehicle) {
-            return ControllerUtils::errorResponse('Vehicle already registered',
+            return ControllerUtils::errorResponse(MessageIndex::VEHICLE_ALREADY_REGISTERED,
                 Response::HTTP_BAD_REQUEST);
         } else {
             $this->vehicleService->register($vehicle);
@@ -64,13 +65,13 @@ class VehicleController extends AbstractController
         /** @var User $user */
         $user = $this->userService->findByEmail($email);
         if (null == $user) {
-            return ControllerUtils::errorResponse('No user found with that email',
+            return ControllerUtils::errorResponse(MessageIndex::USER_NOT_FOUND,
                 Response::HTTP_NOT_FOUND);
         }
         /** @var Vehicle $vehicle */
         $vehicle = $this->vehicleService->findByUserAndNickname($user, $nickname);
         if (null == $vehicle) {
-            return ControllerUtils::errorResponse('No vehicle found with that nickname',
+            return ControllerUtils::errorResponse(MessageIndex::VEHICLE_NOT_FOUND_NICKNAME,
                 Response::HTTP_NOT_FOUND);
         } else {
             return new JsonResponse($vehicle->jsonSerialize());
@@ -85,7 +86,7 @@ class VehicleController extends AbstractController
         /** @var User $user */
         $user = $this->userService->findByEmail($email);
         if (null == $user) {
-            return ControllerUtils::errorResponse('No user found with that email',
+            return ControllerUtils::errorResponse(MessageIndex::USER_NOT_FOUND,
                 Response::HTTP_NOT_FOUND);
         }
         $vehicles = $this->vehicleService->findByUser($user);
@@ -98,14 +99,16 @@ class VehicleController extends AbstractController
     /**
      * @Route(path="/delete/{id}", methods={ Request::METHOD_DELETE })
      */
-    public function delete(string $id) {
+    public function delete(string $id): JsonResponse
+    {
         /** @var Vehicle $vehicle */
         $vehicle = $this->vehicleService->find($id);
         if (null == $vehicle) {
-            return ControllerUtils::errorResponse('No vehicle found with that id',
+            return ControllerUtils::errorResponse(MessageIndex::VEHICLE_NOT_FOUND_ID,
                 Response::HTTP_NOT_FOUND);
         }
         $this->vehicleService->delete($vehicle);
-        return new JsonResponse('Vehicle deleted', Response::HTTP_NO_CONTENT);
+
+        return new JsonResponse(MessageIndex::VEHICLE_DELETED, Response::HTTP_NO_CONTENT);
     }
 }

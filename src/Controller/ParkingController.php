@@ -7,6 +7,7 @@ use App\Document\Parking;
 use App\Service\ParkingService;
 use App\Service\SpotService;
 use App\Util\ControllerUtils;
+use App\Util\MessageIndex;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,7 +45,7 @@ class ParkingController extends AbstractController
         if (null != $parking->getId()) {
             return new JsonResponse($parking->jsonSerialize());
         } else {
-            return ControllerUtils::errorResponse('Parking could not be created',
+            return ControllerUtils::errorResponse(MessageIndex::PARKING_CREATION_FAILED,
                 Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -57,7 +58,7 @@ class ParkingController extends AbstractController
         /** @var Parking $parking */
         $parking = $this->parkingService->get($parkingId);
         if (null == $parking) {
-            return ControllerUtils::errorResponse('No parking found with that Id',
+            return ControllerUtils::errorResponse(MessageIndex::PARKING_NOT_FOUND,
                 Response::HTTP_NOT_FOUND);
         }
 
@@ -71,7 +72,7 @@ class ParkingController extends AbstractController
     {
         $requestData = ControllerUtils::getRequestData($request);
         if ($this->spotService->exists($requestData['spotCode'], $requestData['parkingId'])) {
-            return ControllerUtils::errorResponse('No parking found with that Id',
+            return ControllerUtils::errorResponse(MessageIndex::SPOT_ALREADY_REGISTERED,
                 Response::HTTP_NOT_FOUND);
         }
         /** @var string $spotCode */
@@ -82,7 +83,7 @@ class ParkingController extends AbstractController
         if (null != $spot->getId()) {
             return new JsonResponse($spot->jsonSerialize());
         } else {
-            return ControllerUtils::errorResponse('Spot could not be created',
+            return ControllerUtils::errorResponse(MessageIndex::SPOT_CREATION_FAILED,
                 Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
