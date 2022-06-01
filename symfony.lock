@@ -8,6 +8,18 @@
     "composer/xdebug-handler": {
         "version": "3.0.3"
     },
+    "dama/doctrine-test-bundle": {
+        "version": "7.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "4.0",
+            "ref": "56eaa387b5e48ebcc7c95a893b47dfa1ad51449c"
+        },
+        "files": [
+            "./config/packages/test/dama_doctrine_test_bundle.yaml"
+        ]
+    },
     "doctrine/annotations": {
         "version": "1.13",
         "recipe": {
@@ -23,11 +35,49 @@
     "doctrine/collections": {
         "version": "1.6.8"
     },
+    "doctrine/common": {
+        "version": "3.3.0"
+    },
+    "doctrine/data-fixtures": {
+        "version": "1.5.3"
+    },
+    "doctrine/dbal": {
+        "version": "3.3.6"
+    },
     "doctrine/deprecations": {
         "version": "v1.0.0"
     },
+    "doctrine/doctrine-bundle": {
+        "version": "2.6",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "2.4",
+            "ref": "ddddd8249dd55bbda16fa7a45bb7499ef6f8e90e"
+        },
+        "files": [
+            "./config/packages/doctrine.yaml",
+            "./src/Entity/.gitignore",
+            "./src/Repository/.gitignore"
+        ]
+    },
+    "doctrine/doctrine-fixtures-bundle": {
+        "version": "3.4",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "3.0",
+            "ref": "1f5514cfa15b947298df4d771e694e578d4c204d"
+        },
+        "files": [
+            "./src/DataFixtures/AppFixtures.php"
+        ]
+    },
     "doctrine/event-manager": {
         "version": "1.1.1"
+    },
+    "doctrine/inflector": {
+        "version": "2.0.4"
     },
     "doctrine/instantiator": {
         "version": "1.4.1"
@@ -51,8 +101,14 @@
             "./src/Document/.gitignore"
         ]
     },
+    "doctrine/orm": {
+        "version": "2.12.2"
+    },
     "doctrine/persistence": {
         "version": "2.5.2"
+    },
+    "doctrine/sql-formatter": {
+        "version": "1.1.2"
     },
     "friendsofphp/php-cs-fixer": {
         "version": "3.8",
