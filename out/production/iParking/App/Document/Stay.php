@@ -5,7 +5,7 @@ namespace App\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
- * @MongoDB\Document(collection="stays")
+ * @MongoDB\Document(db="iparking", collection="stays")
  */
 class Stay extends Operation
 {

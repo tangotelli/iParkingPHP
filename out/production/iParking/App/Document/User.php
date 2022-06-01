@@ -7,7 +7,7 @@ use JsonSerializable;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
- * @MongoDB\Document(collection="users")
+ * @MongoDB\Document(db="iparking", collection="users")
  */
 class User implements PasswordAuthenticatedUserInterface, JsonSerializable
 {

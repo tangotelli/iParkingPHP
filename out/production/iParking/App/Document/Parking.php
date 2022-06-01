@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use JsonSerializable;
 
 /**
- * @MongoDB\Document(collection="parkings")
+ * @MongoDB\Document(db="iparking", collection="parkings")
  * @MongoDB\Index(keys={"location"="2d"})
  */
 class Parking implements JsonSerializable

@@ -5,7 +5,7 @@ namespace App\Document;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 
 /**
- * @MongoDB\Document(collection="bookings")
+ * @MongoDB\Document(db="iparking", collection="bookings")
  */
 class Booking extends Operation
 {
