@@ -17,6 +17,11 @@ class ParkingServiceTest extends BaseIntegrationTestCase
         parent::setUp();
         $this->parkingService = $this->kernelInterface->getContainer()
             ->get(ParkingService::class);
+        $this->persistParking();
+    }
+
+    private function persistParking(): void
+    {
         $parking = new Parking();
         $parking->setName('Parking Salesas');
         $parking->setAddress('General Elorza 75');
@@ -46,6 +51,9 @@ class ParkingServiceTest extends BaseIntegrationTestCase
         $parking = $this->parkingService->get($this->parkingId);
         self::assertNotNull($parking);
         self::assertEquals('Parking Salesas', $parking->getName());
+        self::assertEquals('General Elorza 75', $parking->getAddress());
+        self::assertEquals(6.17, $parking->getBookingFare());
+        self::assertEquals(0.08, $parking->getStayFare());
         self::assertEquals(new Location(43.367, -5.849), $parking->getLocation());
     }
 

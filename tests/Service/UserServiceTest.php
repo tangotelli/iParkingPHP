@@ -16,6 +16,11 @@ class UserServiceTest extends \App\Tests\BaseIntegrationTestCase
         parent::setUp();
         $this->userService = $this->kernelInterface->getContainer()
             ->get(UserService::class);
+        $this->persistUser();
+    }
+
+    private function persistUser(): void
+    {
         $user = new User();
         $user->setName('Dummy');
         $user->setEmail('dummy@hotmail.com');
@@ -45,7 +50,8 @@ class UserServiceTest extends \App\Tests\BaseIntegrationTestCase
         self::assertFalse($this->userService->login($user, $user->getPassword()));
     }
 
-    public function testFindByEmail() {
+    public function testFindByEmail()
+    {
         /** @var User $user */
         $user = $this->userService->findByEmail('dummy@hotmail.com');
         self::assertNotNull($user);
