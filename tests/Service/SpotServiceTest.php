@@ -6,24 +6,27 @@ use App\Document\Location;
 use App\Document\Parking;
 use App\Document\Spot;
 use App\Document\Status;
+use App\Document\User;
 use App\Service\ParkingService;
 use App\Service\SpotService;
+use App\Service\UserService;
 
 class SpotServiceTest extends \App\Tests\BaseIntegrationTestCase
 {
     private SpotService $spotService;
-    private ParkingService $parkingService;
     private Parking $parking;
+    private UserService $userService;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->spotService = $this->kernelInterface->getContainer()
             ->get(SpotService::class);
-        $this->parkingService = $this->kernelInterface->getContainer()
-            ->get(ParkingService::class);
+        $this->userService = $this->kernelInterface->getContainer()
+            ->get(UserService::class);
         $this->persistParking();
         $this->persistSpots();
+        $this->persistUsers();
     }
 
     private function persistParking(): void
@@ -56,6 +59,20 @@ class SpotServiceTest extends \App\Tests\BaseIntegrationTestCase
         $spotC->setStatus(Status::OCCUPIED());
         $this->documentManager->persist($spotC);
         $this->documentManager->flush();
+    }
+
+    private function persistUsers(): void
+    {
+        $user = new User();
+        $user->setName('Dummy');
+        $user->setEmail('dummy@hotmail.com');
+        $user->setPassword('contraseña1');
+        $this->userService->signin($user);
+        $user = new User();
+        $user->setName('John Doe');
+        $user->setEmail('johndoe@hotmail.com');
+        $user->setPassword('contraseña2');
+        $this->userService->signin($user);
     }
 
     public function testCreate()
