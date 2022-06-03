@@ -25,11 +25,11 @@ jobs:
       - name: Git checkout placeholder-service
         uses: actions/checkout@v2
       # https://github.com/shivammathur/setup-php (community)
-      - name: Setup PHP
+      - name: Setup PHP with Xdebug
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
-          coverage: none
+          coverage: xdebug
           tools: composer:v2
           extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, dom, filter, gd, iconv, json, mbstring, pdo
         env:
@@ -61,5 +61,17 @@ jobs:
       #  with:
       #    args: --config=.php_cs.dist --diff --dry-run
       ## —— Tests ———————————————————————————————————————————————————————————
-      - name: Run functionnal and unit tests
-        run: composer test
+      # - name: Run functional and unit tests
+      #   run: composer test
+      - name: Run tests with phpunit/phpunit
+        run: vendor/bin/phpunit
+        --coverage-clover=coverage.xml
+
+      - name: Fix code coverage paths
+        run: sed -i
+      's@'$GITHUB_WORKSPACE'@/github/workspace/@g' coverage.xml
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
