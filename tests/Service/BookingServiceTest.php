@@ -117,6 +117,7 @@ class BookingServiceTest extends \App\Tests\BaseIntegrationTestCase
         self::assertNotNull($booking->getId());
         self::assertEquals($this->vehicleA, $booking->getVehicle());
         self::assertEquals($this->spotA, $booking->getSpot());
+        self::assertEquals(Status::BOOKED(), $booking->getSpot()->getStatus());
         self::assertEquals($this->parking->getBookingFare(), $booking->getPrice());
         self::assertEquals(1, $booking->getStart()->diff($booking->getEnd())->h);
         self::assertEquals(0, $booking->getStart()->diff($booking->getEnd())->d);
