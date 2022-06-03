@@ -19,6 +19,7 @@ class BookingServiceTest extends \App\Tests\BaseIntegrationTestCase
     private UserService $userService;
     private User $userA;
     private User $userB;
+    private User $userC;
     private Vehicle $vehicleA;
     private Vehicle $vehicleB;
     private Parking $parking;
@@ -77,6 +78,11 @@ class BookingServiceTest extends \App\Tests\BaseIntegrationTestCase
         $this->userB->setEmail('johndoe@yahoo.us');
         $this->userB->setPassword('w0rdp4s$');
         $this->userService->signin($this->userB);
+        $this->userC = new User();
+        $this->userC->setName('Jane Doe');
+        $this->userC->setEmail('mistressdoe@yahoo.us');
+        $this->userC->setPassword('misdoes');
+        $this->userService->signin($this->userC);
     }
 
     private function persistVehicles()
@@ -134,6 +140,7 @@ class BookingServiceTest extends \App\Tests\BaseIntegrationTestCase
     public function testFindActiveBooking()
     {
         self::assertNull($this->bookingService->findActiveBooking($this->userA, $this->parking->getId()));
+        self::assertNull($this->bookingService->findActiveBooking($this->userC, $this->parking->getId()));
         self::assertNotNull($this->bookingService->findActiveBooking($this->userB, $this->parking->getId()));
         $booking = $this->bookingService->findActiveBooking($this->userB, $this->parking->getId());
         self::assertNotNull($booking);
