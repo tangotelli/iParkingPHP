@@ -59,8 +59,8 @@ class ParkingServiceTest extends BaseIntegrationTestCase
 
     public function testFindAll()
     {
-        $parkings = $this->documentManager->getRepository(Parking::class)->findAll();
-        self::assertEquals(1, count($this->documentManager->getRepository(Parking::class)->findAll()));
+        $parkings = $this->parkingService->findAll();
+        self::assertEquals(1, count($parkings));
         self::assertEquals($this->parkingId, $parkings[0]->getId());
         self::assertEquals('Parking Salesas', $parkings[0]->getName());
         $parking = new Parking();
@@ -70,8 +70,8 @@ class ParkingServiceTest extends BaseIntegrationTestCase
         $parking->setStayFare(0.11);
         $parking->setLocation(new Location(-21.367, 7.849));
         $this->parkingService->create($parking);
-        $parkings = $this->documentManager->getRepository(Parking::class)->findAll();
-        self::assertEquals(2, count($this->documentManager->getRepository(Parking::class)->findAll()));
+        $parkings = $this->parkingService->findAll();
+        self::assertEquals(2, count($parkings));
         self::assertEquals($this->parkingId, $parkings[0]->getId());
         self::assertEquals('Parking Salesas', $parkings[0]->getName());
         self::assertEquals('Gora Aparcamientos', $parkings[1]->getName());
