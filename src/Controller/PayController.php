@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Util\ControllerUtils;
 use App\Util\MessageIndex;
+use App\Util\RandomIntegerGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,7 +28,7 @@ class PayController extends AbstractController
             return ControllerUtils::errorResponse(MessageIndex::PAYMENT_FAILED,
                 Response::HTTP_INTERNAL_SERVER_ERROR);
         } else {
-            return new JsonResponse(['Message' => MessageIndex::PAYMENT_COMPLETED], 200);
+            return new JsonResponse(['Message' => MessageIndex::PAYMENT_COMPLETED], Response::HTTP_OK);
         }
     }
 }
