@@ -2,33 +2,31 @@
 
 namespace App\Tests\Controller;
 
-use App\Document\User;
 use App\Tests\BaseWebTestCase;
+use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
+use Faker\Factory as FakerFactoryAlias;
+use Faker\Generator as FakerGeneratorAlias;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserControllerTest extends BaseWebTestCase
 {
-    private $body;
+    private static $body;
+    private static FakerGeneratorAlias $faker;
 
     protected function setUp(): void
     {
         parent::setUp();
-        // $this->persistUser();
-        $this->body = [
-            'email' => self::$faker->email(),
-            'name' => self::$faker->name(),
-            'password' => self::$faker->password(),
-        ];
     }
 
-    private function persistUser()
+    public static function setUpBeforeClass(): void
     {
-        $user = new User();
-        $user->setName('Dummy');
-        $user->setEmail('dummy@hotmail.com');
-        $user->setPassword('password');
-        // $this->userService->signin($user);
+        self::$faker = FakerFactoryAlias::create('es_ES');
+        self::$body = [
+            'email' => self::$faker->email(),
+            'name' => self::$faker->name(),
+            'password' => self::$faker->word(),
+        ];
     }
 
     public function testSigninSuccessful()
@@ -39,18 +37,18 @@ class UserControllerTest extends BaseWebTestCase
             [],
             [],
             [],
-            strval(json_encode($this->body))
+            strval(json_encode(self::$body))
         );
         $response = self::$client->getResponse();
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
         $user = json_decode(strval($response->getContent()), true);
         self::assertNotNull($user['Id']);
-        self::assertEquals($this->body['email'], $user['Email']);
-        self::assertEquals($this->body['name'], $user['Name']);
+        self::assertEquals(self::$body['email'], $user['Email']);
+        self::assertEquals(self::$body['name'], $user['Name']);
     }
 
     /**
-     * @depends testSigninSucessful
+     * @depends testSigninSuccessful
      */
     public function testSigninUnsuccesful()
     {
@@ -60,17 +58,18 @@ class UserControllerTest extends BaseWebTestCase
             [],
             [],
             [],
-            strval(json_encode($this->body))
+            strval(json_encode(self::$body))
         );
-        self::assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
     }
 
     /**
-     * @depends testSigninSucessful
+     * @depends testSigninSuccessful
      */
     public function testLoginSuccesful()
     {
-        $query = '?email='.$this->body['email'].'&password='.$this->body['password'];
+        $query = '?email='.self::$body['email'].'&password='.self::$body['password'];
         self::$client->request(
             Request::METHOD_GET,
             '/user/login'.$query
@@ -79,33 +78,44 @@ class UserControllerTest extends BaseWebTestCase
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
         $user = json_decode(strval($response->getContent()), true);
         self::assertNotNull($user['Id']);
-        self::assertEquals($this->body['email'], $user['Email']);
-        self::assertEquals($this->body['name'], $user['Name']);
+        self::assertEquals(self::$body['email'], $user['Email']);
+        self::assertEquals(self::$body['name'], $user['Name']);
     }
 
     /**
-     * @depends testSigninSucessful
+     * @depends testSigninSuccessful
      */
     public function testLoginUnsuccesfulWrongEmail()
     {
-        $query = '?email='.$this->body['email'].'mal&password='.$this->body['password'];
+        $query = '?email='.self::$body['email'].'mal&password='.self::$body['password'];
         self::$client->request(
             Request::METHOD_GET,
             '/user/login'.$query
         );
-        self::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
     }
 
     /**
-     * @depends testSigninSucessful
+     * @depends testSigninSuccessful
      */
     public function testLoginUnsuccesfulWrongPassword()
     {
-        $query = '?email='.$this->body['email'].'&password='.$this->body['password'].'mal';
+        $query = '?email='.self::$body['email'].'&password='.self::$body['password'].'mal';
         self::$client->request(
             Request::METHOD_GET,
             '/user/login'.$query
         );
-        self::assertResponseStatusCodeSame(Response::HTTP_UNAUTHORIZED);
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        $documentManager = self::getContainer()
+            ->get('doctrine_mongodb')
+            ->getManager();
+        $purger = new MongoDBPurger($documentManager);
+        $purger->purge();
     }
 }
