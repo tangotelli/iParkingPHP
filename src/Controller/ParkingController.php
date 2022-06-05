@@ -42,12 +42,8 @@ class ParkingController extends AbstractController
         $location = new Location($requestData['latitude'], $requestData['longitude']);
         $parking->setLocation($location);
         $this->parkingService->create($parking);
-        if (null != $parking->getId()) {
-            return new JsonResponse($parking->jsonSerialize());
-        } else {
-            return ControllerUtils::errorResponse(MessageIndex::PARKING_CREATION_FAILED,
-                Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+
+        return new JsonResponse($parking->jsonSerialize());
     }
 
     /**
@@ -73,19 +69,15 @@ class ParkingController extends AbstractController
         $requestData = ControllerUtils::getRequestData($request);
         if ($this->spotService->exists($requestData['spotCode'], $requestData['parkingId'])) {
             return ControllerUtils::errorResponse(MessageIndex::SPOT_ALREADY_REGISTERED,
-                Response::HTTP_NOT_FOUND);
+                Response::HTTP_BAD_REQUEST);
         }
         /** @var string $spotCode */
         $spotCode = $requestData['spotCode'];
         /** @var Parking $parking */
         $parking = $this->parkingService->get($requestData['parkingId']);
         $spot = $this->spotService->create($parking, $spotCode);
-        if (null != $spot->getId()) {
-            return new JsonResponse($spot->jsonSerialize());
-        } else {
-            return ControllerUtils::errorResponse(MessageIndex::SPOT_CREATION_FAILED,
-                Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+
+        return new JsonResponse($spot->jsonSerialize());
     }
 
     /**

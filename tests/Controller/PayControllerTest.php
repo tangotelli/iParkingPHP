@@ -28,7 +28,8 @@ class PayControllerTest extends BaseWebTestCase
             Request::METHOD_POST,
             '/payment/pay'
         );
-        self::assertResponseStatusCodeSame(Response::HTTP_OK);
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
     }
 
     public function testPayUnsuccesful()
@@ -40,6 +41,7 @@ class PayControllerTest extends BaseWebTestCase
             Request::METHOD_POST,
             '/payment/pay'
         );
-        self::assertResponseStatusCodeSame(Response::HTTP_INTERNAL_SERVER_ERROR);
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
     }
 }

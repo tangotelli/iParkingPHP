@@ -3,9 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Document\User;
-use App\Document\Vehicle;
 use App\Service\UserService;
-use App\Service\VehicleService;
 use App\Tests\BaseWebTestCase;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
 use Faker\Factory as FakerFactoryAlias;
@@ -15,7 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 class VehicleControllerTest extends BaseWebTestCase
 {
     private static array $body;
-    private string $vehicleId;
 
     public static function setUpBeforeClass(): void
     {
@@ -60,6 +57,8 @@ class VehicleControllerTest extends BaseWebTestCase
         self::assertEquals(self::$body['email'], $vehicle['User']);
         self::assertEquals(self::$body['nickname'], $vehicle['Nickname']);
         self::assertEquals(self::$body['licensePlate'], $vehicle['License Plate']);
+
+        return $vehicle['Id'];
     }
 
     public function testRegisterUnsuccessfulUnregisteredUser()
@@ -84,7 +83,7 @@ class VehicleControllerTest extends BaseWebTestCase
     /**
      * @depends testRegisterSuccessful
      */
-    public function testRegisterUnsuccessfulRepeatedVehicle()
+    public function testRegisterUnsuccessfulRepeatedVehicle(string $vehicleId)
     {
         self::$client->request(
             Request::METHOD_POST,
@@ -96,12 +95,14 @@ class VehicleControllerTest extends BaseWebTestCase
         );
         $response = self::$client->getResponse();
         self::assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+
+        return $vehicleId;
     }
 
     /**
-     * @depends testRegisterSuccessful
+     * @depends testRegisterUnsuccessfulRepeatedVehicle
      */
-    public function testFindByUserAndNicknameSuccessful()
+    public function testFindByUserAndNicknameSuccessful(string $vehicleId)
     {
         $query = '?email='.self::$body['email'].'&nickname='.self::$body['nickname'];
         self::$client->request(
@@ -115,6 +116,8 @@ class VehicleControllerTest extends BaseWebTestCase
         self::assertEquals(self::$body['email'], $vehicle['User']);
         self::assertEquals(self::$body['nickname'], $vehicle['Nickname']);
         self::assertEquals(self::$body['licensePlate'], $vehicle['License Plate']);
+
+        return $vehicleId;
     }
 
     public function testFindByUserAndNicknameSuccesfulUnregisteredUser()
@@ -140,9 +143,9 @@ class VehicleControllerTest extends BaseWebTestCase
     }
 
     /**
-     * @depends testRegisterSuccessful
+     * @depends testRegisterUnsuccessfulRepeatedVehicle
      */
-    public function testFindByUserSuccessful()
+    public function testFindByUserSuccessful(string $vehicleId)
     {
         self::$client->request(
             Request::METHOD_GET,
@@ -150,6 +153,31 @@ class VehicleControllerTest extends BaseWebTestCase
         );
         $response = self::$client->getResponse();
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
+
+        return $vehicleId;
+    }
+
+    /**
+     * @depends testFindByUserSuccessful
+     */
+    public function testDeleteSuccesful(string $vehicleId)
+    {
+        self::$client->request(
+            Request::METHOD_DELETE,
+            '/vehicle/delete/'.$vehicleId
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+    }
+
+    public function testDeleteUnsuccesful()
+    {
+        self::$client->request(
+            Request::METHOD_DELETE,
+            '/vehicle/delete/1'
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
     }
 
     public static function tearDownAfterClass(): void

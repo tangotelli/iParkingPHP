@@ -15,10 +15,8 @@ class MessageIndex
     public const STAY_ALREADY_ACTIVE = 'You already have an active stay in this parking';
     public const PAYMENT_COMPLETED = 'Payment completed';
     public const PAYMENT_FAILED = 'Payment failed';
-    public const PARKING_CREATION_FAILED = 'Parking could not be created';
     public const PARKING_NOT_FOUND = 'No parking found with that Id';
     public const SPOT_ALREADY_REGISTERED = 'Spot with the given code already registered for the given parking';
-    public const SPOT_CREATION_FAILED = 'Spot could not be created';
     public const NO_FREE_SPOTS = 'No free spots in the given parking';
     public const BOOKING_ALREADY_ACTIVE = 'You already have an active booking in this parking';
 
