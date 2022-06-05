@@ -12,6 +12,7 @@
         "ext-mongodb": "*",
         "doctrine/mongodb-odm-bundle": "^4.4",
         "doctrine/orm": "^2.12",
+        "fakerphp/faker": "^1.19",
         "friendsofphp/php-cs-fixer": "^3.8",
         "mongodb/mongodb": "^1.12",
         "myclabs/php-enum": "^1.8",
