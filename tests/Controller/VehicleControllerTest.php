@@ -3,7 +3,9 @@
 namespace App\Tests\Controller;
 
 use App\Document\User;
+use App\Document\Vehicle;
 use App\Service\UserService;
+use App\Service\VehicleService;
 use App\Tests\BaseWebTestCase;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
 use Faker\Factory as FakerFactoryAlias;
@@ -13,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 class VehicleControllerTest extends BaseWebTestCase
 {
     private static array $body;
+    private string $vehicleId;
 
     public static function setUpBeforeClass(): void
     {
@@ -36,7 +39,7 @@ class VehicleControllerTest extends BaseWebTestCase
         $user->setName('DummyVCT');
         $user->setEmail(self::$body['email']);
         $user->setPassword('password');
-        $userService = self::getContainer()->get(UserService::class);
+        $userService = $this->getContainer()->get(UserService::class);
         $userService->signin($user);
     }
 
@@ -93,6 +96,60 @@ class VehicleControllerTest extends BaseWebTestCase
         );
         $response = self::$client->getResponse();
         self::assertEquals(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+    }
+
+    /**
+     * @depends testRegisterSuccessful
+     */
+    public function testFindByUserAndNicknameSuccessful()
+    {
+        $query = '?email='.self::$body['email'].'&nickname='.self::$body['nickname'];
+        self::$client->request(
+            Request::METHOD_GET,
+            '/vehicle/get'.$query
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
+        $vehicle = json_decode(strval($response->getContent()), true);
+        self::assertNotNull($vehicle['Id']);
+        self::assertEquals(self::$body['email'], $vehicle['User']);
+        self::assertEquals(self::$body['nickname'], $vehicle['Nickname']);
+        self::assertEquals(self::$body['licensePlate'], $vehicle['License Plate']);
+    }
+
+    public function testFindByUserAndNicknameSuccesfulUnregisteredUser()
+    {
+        $query = '?email='.self::$body['email'].'mal&nickname='.self::$body['nickname'];
+        self::$client->request(
+            Request::METHOD_GET,
+            '/vehicle/get'.$query
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+    }
+
+    public function testFindByUserAndNicknameSuccesfulUnregisteredVehicle()
+    {
+        $query = '?email='.self::$body['email'].'&nickname=mql'.self::$body['nickname'];
+        self::$client->request(
+            Request::METHOD_GET,
+            '/vehicle/get'.$query
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+    }
+
+    /**
+     * @depends testRegisterSuccessful
+     */
+    public function testFindByUserSuccessful()
+    {
+        self::$client->request(
+            Request::METHOD_GET,
+            '/vehicle/get/'.self::$body['email']
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
     }
 
     public static function tearDownAfterClass(): void
