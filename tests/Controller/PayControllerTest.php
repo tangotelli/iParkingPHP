@@ -21,7 +21,7 @@ class PayControllerTest extends BaseWebTestCase
 
     public function testPaySuccesful()
     {
-        $this->generatorMock->method('generate')->willReturn(5);
+        $this->generatorMock->method('generate')->willReturn(0);
         $this->getContainer()
             ->set('App\Util\RandomIntegerGenerator', $this->generatorMock);
         self::$client->request(
