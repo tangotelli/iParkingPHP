@@ -7,11 +7,11 @@ use App\Document\Parking;
 use App\Document\Spot;
 use App\Document\Status;
 use App\Document\User;
-use App\Service\ParkingService;
 use App\Service\SpotService;
 use App\Service\UserService;
+use App\Tests\BaseIntegrationTestCase;
 
-class SpotServiceTest extends \App\Tests\BaseIntegrationTestCase
+class SpotServiceTest extends BaseIntegrationTestCase
 {
     private SpotService $spotService;
     private Parking $parking;
@@ -20,9 +20,9 @@ class SpotServiceTest extends \App\Tests\BaseIntegrationTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->spotService = $this->kernelInterface->getContainer()
+        $this->spotService = $this->getContainer()
             ->get(SpotService::class);
-        $this->userService = $this->kernelInterface->getContainer()
+        $this->userService = $this->getContainer()
             ->get(UserService::class);
         $this->persistParking();
         $this->persistSpots();

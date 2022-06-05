@@ -15,7 +15,7 @@ class ParkingServiceTest extends BaseIntegrationTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->parkingService = $this->kernelInterface->getContainer()
+        $this->parkingService = $this->getContainer()
             ->get(ParkingService::class);
         $this->persistParking();
     }

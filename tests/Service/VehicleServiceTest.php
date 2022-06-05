@@ -6,8 +6,9 @@ use App\Document\User;
 use App\Document\Vehicle;
 use App\Service\UserService;
 use App\Service\VehicleService;
+use App\Tests\BaseIntegrationTestCase;
 
-class VehicleServiceTest extends \App\Tests\BaseIntegrationTestCase
+class VehicleServiceTest extends BaseIntegrationTestCase
 {
     private VehicleService $vehicleService;
     private UserService $userService;
@@ -19,9 +20,9 @@ class VehicleServiceTest extends \App\Tests\BaseIntegrationTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->vehicleService = $this->kernelInterface->getContainer()
+        $this->vehicleService = $this->getContainer()
             ->get(VehicleService::class);
-        $this->userService = $this->kernelInterface->getContainer()
+        $this->userService = $this->getContainer()
             ->get(UserService::class);
         $this->persistUsers();
         $this->persistVehicles();

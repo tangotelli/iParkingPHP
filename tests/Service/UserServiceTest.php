@@ -4,8 +4,9 @@ namespace App\Tests\Service;
 
 use App\Document\User;
 use App\Service\UserService;
+use App\Tests\BaseIntegrationTestCase;
 
-class UserServiceTest extends \App\Tests\BaseIntegrationTestCase
+class UserServiceTest extends BaseIntegrationTestCase
 {
     private UserService $userService;
     private string $userId;
@@ -14,7 +15,7 @@ class UserServiceTest extends \App\Tests\BaseIntegrationTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->userService = $this->kernelInterface->getContainer()
+        $this->userService = $this->getContainer()
             ->get(UserService::class);
         $this->persistUser();
     }

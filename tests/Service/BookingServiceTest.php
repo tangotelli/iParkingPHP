@@ -11,9 +11,10 @@ use App\Document\User;
 use App\Document\Vehicle;
 use App\Service\BookingService;
 use App\Service\UserService;
+use App\Tests\BaseIntegrationTestCase;
 use DateInterval;
 
-class BookingServiceTest extends \App\Tests\BaseIntegrationTestCase
+class BookingServiceTest extends BaseIntegrationTestCase
 {
     private BookingService $bookingService;
     private UserService $userService;
@@ -29,9 +30,9 @@ class BookingServiceTest extends \App\Tests\BaseIntegrationTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->bookingService = $this->kernelInterface->getContainer()
+        $this->bookingService = $this->getContainer()
             ->get(BookingService::class);
-        $this->userService = $this->kernelInterface->getContainer()
+        $this->userService = $this->getContainer()
             ->get(UserService::class);
         $this->persistParking();
         $this->persistSpots();

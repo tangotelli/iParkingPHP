@@ -5,19 +5,12 @@ namespace App\Tests\Controller;
 use App\Tests\BaseWebTestCase;
 use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
 use Faker\Factory as FakerFactoryAlias;
-use Faker\Generator as FakerGeneratorAlias;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class UserControllerTest extends BaseWebTestCase
 {
-    private static $body;
-    private static FakerGeneratorAlias $faker;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
+    private static array $body;
 
     public static function setUpBeforeClass(): void
     {
