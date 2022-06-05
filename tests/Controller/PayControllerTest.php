@@ -17,13 +17,13 @@ class PayControllerTest extends BaseWebTestCase
     {
         parent::setUp();
         $this->generatorMock = $this->createMock(RandomIntegerGenerator::class);
+        $this->getContainer()
+            ->set('App\Util\RandomIntegerGenerator', $this->generatorMock);
     }
 
     public function testPaySuccesful()
     {
-        $this->generatorMock->method('generate')->willReturn(0);
-        $this->getContainer()
-            ->set('App\Util\RandomIntegerGenerator', $this->generatorMock);
+        $this->generatorMock->method('generate')->willReturn(5);
         self::$client->request(
             Request::METHOD_POST,
             '/payment/pay'
@@ -35,8 +35,6 @@ class PayControllerTest extends BaseWebTestCase
     public function testPayUnsuccesful()
     {
         $this->generatorMock->method('generate')->willReturn(3);
-        $this->getContainer()
-            ->set('App\Util\RandomIntegerGenerator', $this->generatorMock);
         self::$client->request(
             Request::METHOD_POST,
             '/payment/pay'
