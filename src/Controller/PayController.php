@@ -16,14 +16,20 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class PayController extends AbstractController
 {
+    private RandomIntegerGenerator $randomIntegerGenerator;
     private const ODDS_DENOMINATOR = 3;
+
+    public function __construct(RandomIntegerGenerator $randomIntegerGenerator)
+    {
+        $this->randomIntegerGenerator = $randomIntegerGenerator;
+    }
 
     /**
      * @Route(path="/pay", methods={ Request::METHOD_POST })
      */
     public function pay(Request $request): JsonResponse
     {
-        $random = random_int(1, 10);
+        $random = $this->randomIntegerGenerator->generate();
         if (0 == $random % self::ODDS_DENOMINATOR) {
             return ControllerUtils::errorResponse(MessageIndex::PAYMENT_FAILED,
                 Response::HTTP_INTERNAL_SERVER_ERROR);
