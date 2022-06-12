@@ -41,6 +41,7 @@ class SpotService
     {
         /** @var Spot $spot */
         $spot = $this->findFreeSpot($parkingId);
+
         return null != $spot;
     }
 
@@ -94,5 +95,29 @@ class SpotService
     {
         return $this->documentManager->getRepository(Spot::class)
             ->findBy(['parking' => $parkingId]);
+    }
+
+    public function countFreeSpots(string $parkingId)
+    {
+        /*$builder = $this->documentManager->createAggregationBuilder(Spot::class);
+        $builder
+            ->match()
+                ->field('parking')->equals($parkingId)
+                ->field('status')->equals(Status::FREE())
+            ->group()*/
+        $queryBuilder = $this->documentManager->createQueryBuilder(Spot::class);
+        $queryBuilder
+            ->field('parking')->equals($parkingId)
+            ->field('status')->equals(Status::FREE());
+
+        return $queryBuilder->count()->getQuery()->execute();
+    }
+
+    public function countSpots(string $parkingId)
+    {
+        $queryBuilder = $this->documentManager->createQueryBuilder(Spot::class);
+        $queryBuilder->field('parking')->equals($parkingId);
+
+        return $queryBuilder->count()->getQuery()->execute();
     }
 }

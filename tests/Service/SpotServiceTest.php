@@ -204,4 +204,14 @@ class SpotServiceTest extends BaseIntegrationTestCase
         self::assertEquals('C1', $spots[2]->getCode());
         self::assertEquals(Status::OCCUPIED(), $spots[2]->getStatus());
     }
+
+    public function testCountFreeSpots()
+    {
+        self::assertEquals(1, $this->spotService->countFreeSpots($this->parking->getId()));
+    }
+
+    public function testCountSpots()
+    {
+        self::assertEquals(3, $this->spotService->countSpots($this->parking->getId()));
+    }
 }
