@@ -91,4 +91,22 @@ class ParkingController extends AbstractController
 
         return new JsonResponse($dataArray);
     }
+
+    /**
+     * @Route(path="/occupation/{parkingId}", methods={ Request::METHOD_GET })
+     */
+    public function getLevelOfOccupation(string $parkingId): JsonResponse
+    {
+        /** @var Parking $parking */
+        $parking = $this->parkingService->get($parkingId);
+        if (null == $parking) {
+            return ControllerUtils::errorResponse(MessageIndex::PARKING_NOT_FOUND,
+                Response::HTTP_NOT_FOUND);
+        }
+        $freeSpots = $this->spotService->countFreeSpots($parkingId);
+        $totalSpots = $this->spotService->countSpots($parkingId);
+        $occupation = $freeSpots * 100 / $totalSpots;
+
+        return new JsonResponse(['Occupation percentage' => $occupation]);
+    }
 }

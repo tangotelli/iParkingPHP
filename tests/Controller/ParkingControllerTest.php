@@ -144,6 +144,29 @@ class ParkingControllerTest extends BaseWebTestCase
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
     }
 
+    /**
+     * @depends testCreateSpotSuccessful
+     */
+    public function testGetLevelOfOccupationSuccessful(mixed $spot)
+    {
+        self::$client->request(
+            Request::METHOD_GET,
+            '/parking/occupation/'.$spot['Parking Id']
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
+    }
+
+    public function testGetLevelOfOccupationUnsuccesful()
+    {
+        self::$client->request(
+            Request::METHOD_GET,
+            '/parking/occupation/1'
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+    }
+
     public static function tearDownAfterClass(): void
     {
         $documentManager = self::getContainer()
