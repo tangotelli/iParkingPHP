@@ -105,7 +105,7 @@ class ParkingController extends AbstractController
         }
         $freeSpots = $this->spotService->countFreeSpots($parkingId);
         $totalSpots = $this->spotService->countSpots($parkingId);
-        $occupation = $freeSpots * 100 / $totalSpots;
+        $occupation = ($totalSpots - $freeSpots) * 100 / $totalSpots;
 
         return new JsonResponse(['Occupation percentage' => $occupation]);
     }

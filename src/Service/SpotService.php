@@ -99,12 +99,6 @@ class SpotService
 
     public function countFreeSpots(string $parkingId)
     {
-        /*$builder = $this->documentManager->createAggregationBuilder(Spot::class);
-        $builder
-            ->match()
-                ->field('parking')->equals($parkingId)
-                ->field('status')->equals(Status::FREE())
-            ->group()*/
         $queryBuilder = $this->documentManager->createQueryBuilder(Spot::class);
         $queryBuilder
             ->field('parking')->equals($parkingId)
