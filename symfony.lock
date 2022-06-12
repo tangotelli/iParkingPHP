@@ -131,6 +131,9 @@
     "jean85/pretty-package-versions": {
         "version": "2.0.5"
     },
+    "jmikola/geojson": {
+        "version": "v1.0.0"
+    },
     "laminas/laminas-code": {
         "version": "4.5.1"
     },

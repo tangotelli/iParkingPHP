@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Document\Location;
 use App\Document\Parking;
 use Doctrine\ODM\MongoDB\DocumentManager;
 
@@ -28,5 +29,12 @@ class ParkingService
     public function findAll()
     {
         return $this->documentManager->getRepository(Parking::class)->findAll();
+    }
+
+    public function findClosestParkings(Location $location)
+    {
+        $queryBuilder = $this->documentManager->createQueryBuilder(Parking::class);
+        $queryBuilder->field('location')->near($location->getLatitude(), $location->getLongitude());
+        return $queryBuilder->getQuery()->execute();
     }
 }

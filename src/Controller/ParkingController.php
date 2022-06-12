@@ -8,6 +8,8 @@ use App\Service\ParkingService;
 use App\Service\SpotService;
 use App\Util\ControllerUtils;
 use App\Util\MessageIndex;
+use Doctrine\ODM\MongoDB\Iterator\CachingIterator;
+use phpDocumentor\Reflection\Types\Float_;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -112,5 +114,21 @@ class ParkingController extends AbstractController
         }
 
         return new JsonResponse(['Occupation percentage' => $occupation]);
+    }
+
+    /**
+     * @Route(path="/closest", methods={ Request::METHOD_GET })
+     */
+    public function findClosestParkings(Request $request)
+    {
+        $latitude = (string) $request->query->get('latitude');
+        $longitude = (string) $request->query->get('longitude');
+        $location = new Location(floatval($latitude), floatval($longitude));
+        /** @var CachingIterator $parkingsIterator */
+        $parkings = $this->parkingService->findClosestParkings($location)->toArray();
+        /** @var Parking $parking */
+        $dataArray = array_map(fn ($parking) => [$parking->jsonSerialize()], $parkings);
+
+        return new JsonResponse($dataArray);
     }
 }

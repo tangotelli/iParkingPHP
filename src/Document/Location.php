@@ -6,18 +6,18 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as MongoDB;
 use JsonSerializable;
 
 /**
- * @MongoDB\EmbeddedDocument()
+ * @MongoDB\EmbeddedDocument
  */
 class Location implements JsonSerializable
 {
     /**
-     * @MongoDB\Field(type="float")
-     */
-    private float $latitude;
-    /**
-     * @MongoDB\Field(type="float")
+     * @MongoDB\Field (type="float")
      */
     private float $longitude;
+    /**
+     * @MongoDB\Field (type="float")
+     */
+    private float $latitude;
 
     public function __construct(float $latitude, float $longitude)
     {
