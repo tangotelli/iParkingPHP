@@ -11,7 +11,8 @@ class MessageIndex
     public const USER_NOT_FOUND = 'No user found with that email';
     public const USER_ALREADY_REGISTERED = 'User with the given email already registered';
     public const WRONG_CREDENTIALS = 'Wrong credentials given';
-    public const STAY_NOT_FOUND = 'No stay found with that Id';
+    public const STAY_NOT_FOUND_ID = 'No stay found with that Id';
+    public const STAY_NOT_FOUND_USER = 'No stay found for that user';
     public const STAY_ALREADY_ACTIVE = 'You already have an active stay in this parking';
     public const PAYMENT_COMPLETED = 'Payment completed';
     public const PAYMENT_FAILED = 'Payment failed';

@@ -203,4 +203,16 @@ class StayServiceTest extends BaseIntegrationTestCase
         self::assertEquals($this->spotC, $stayResumed->getSpot());
         self::assertEquals(Status::OCCUPIED(), $stayResumed->getSpot()->getStatus());
     }
+
+    public function testFindActiveStayByUserVehicles()
+    {
+        $vehicles = [$this->vehicleB, $this->vehicleC];
+        $stay = $this->stayService->findActiveStayByUserVehicles($vehicles);
+        self::assertNotNull($stay);
+        self::assertEquals($this->spotC, $stay->getSpot());
+        self::assertEquals($this->vehicleC, $stay->getVehicle());
+        self::assertEquals(Status::OCCUPIED(), $stay->getSpot()->getStatus());
+        $otherVehicles = [$this->vehicleA, $this->vehicleB];
+        self::assertNull($this->stayService->findActiveStayByUserVehicles($otherVehicles));
+    }
 }

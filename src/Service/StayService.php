@@ -90,4 +90,17 @@ class StayService
 
         return $stay;
     }
+
+    public function findActiveStayByUserVehicles(array $vehicles)
+    {
+        $now = new \DateTime('now', new \DateTimeZone(self::TIMEZONE));
+        $queryBuilder = $this->documentManager->createQueryBuilder(Stay::class);
+        $queryBuilder->field('vehicle')->in($vehicles)
+            ->field('start')->lte($now)
+            ->field('end')->exists(false)
+            ->limit(1);
+        $query = $queryBuilder->getQuery();
+
+        return $query->getSingleResult();
+    }
 }

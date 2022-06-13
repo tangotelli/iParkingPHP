@@ -12,6 +12,7 @@ use App\Service\SpotService;
 use App\Service\UserService;
 use App\Service\VehicleService;
 use App\Tests\BaseWebTestCase;
+use Doctrine\Common\DataFixtures\Purger\MongoDBPurger;
 use Faker\Factory as FakerFactoryAlias;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -102,5 +103,14 @@ class BookingControllerTest extends BaseWebTestCase
         self::assertEquals($this->vehicle->getNickname(), $booking['Vehicle']);
         self::assertEquals($this->user->getEmail(), $booking['User']);
         self::assertEquals($this->parking->getBookingFare(), $booking['Price']);
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        $documentManager = self::getContainer()
+            ->get('doctrine_mongodb')
+            ->getManager();
+        $purger = new MongoDBPurger($documentManager);
+        $purger->purge();
     }
 }

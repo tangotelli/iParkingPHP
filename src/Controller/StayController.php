@@ -90,7 +90,7 @@ class StayController extends AbstractController
         /** @var Stay $stay */
         $stay = $this->stayService->get($stayId);
         if (null == $stay) {
-            return ControllerUtils::errorResponse(MessageIndex::STAY_NOT_FOUND,
+            return ControllerUtils::errorResponse(MessageIndex::STAY_NOT_FOUND_ID,
                 Response::HTTP_NOT_FOUND);
         }
         $stay = $this->stayService->endStay($stay);
@@ -105,7 +105,7 @@ class StayController extends AbstractController
         /** @var Stay $stay */
         $stay = $this->stayService->get($stayId);
         if (null == $stay) {
-            return ControllerUtils::errorResponse(MessageIndex::STAY_NOT_FOUND,
+            return ControllerUtils::errorResponse(MessageIndex::STAY_NOT_FOUND_ID,
                 Response::HTTP_NOT_FOUND);
         }
         $stay = $this->stayService->resumeStay($stay);
@@ -113,5 +113,34 @@ class StayController extends AbstractController
         $stay->setPrice(0.0);
 
         return new JsonResponse($stay->jsonSerialize());
+    }
+
+    /**
+     * @Route(path="/get", methods={ Request::METHOD_GET })
+     */
+    public function findStayByUser(Request $request)
+    {
+        $email = (string) $request->query->get('email');
+        /** @var User $user */
+        $user = $this->userService->findByEmail($email);
+        if (null == $user) {
+            return ControllerUtils::errorResponse(MessageIndex::USER_NOT_FOUND,
+                Response::HTTP_NOT_FOUND);
+        }
+        $vehicles = $this->vehicleService->findByUser($user);
+        if (null == $vehicles) {
+            return ControllerUtils::errorResponse(MessageIndex::STAY_NOT_FOUND_USER,
+                Response::HTTP_NOT_FOUND);
+        }
+        /** @var Stay $stay */
+        $stay = $this->stayService->findActiveStayByUserVehicles($vehicles);
+        if (null == $stay) {
+            return ControllerUtils::errorResponse(MessageIndex::STAY_NOT_FOUND_USER,
+                Response::HTTP_NOT_FOUND);
+        } else {
+            $stay->setEnd($stay->getStart());
+            $stay->setPrice(0.0);
+            return new JsonResponse($stay->jsonSerialize());
+        }
     }
 }
