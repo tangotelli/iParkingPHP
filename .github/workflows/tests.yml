@@ -63,6 +63,8 @@ jobs:
       ## —— Tests ———————————————————————————————————————————————————————————
       # - name: Run functional and unit tests
       #   run: composer test
+      - name: Set up test environment database
+        run: php bin/console --env=test doctrine:mongodb:schema:update
       - name: Run tests with phpunit/phpunit
         run: vendor/bin/phpunit --coverage-clover=coverage.xml
       - name: Fix code coverage paths
