@@ -26,6 +26,7 @@ class Stay extends Operation
             'Beginning' => $this->getStart()->format('d/m/Y H:i:s'),
             'End' => $this->start != $this->end ? $this->getEnd()->format('d/m/Y H:i:s') : 'null',
             'Price' => null != $this->price ? $this->getPrice() : 'null',
+            'Fare' => $this->getSpot()->getParking()->getStayFare(),
         ];
     }
 
