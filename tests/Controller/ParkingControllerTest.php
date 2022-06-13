@@ -145,6 +145,19 @@ class ParkingControllerTest extends BaseWebTestCase
     }
 
     /**
+     * @depends testCreateSuccessful
+     */
+    public function testFindClosestParkings()
+    {
+        self::$client->request(
+            Request::METHOD_GET,
+            '/parking/closest?latitude='.self::$body['latitude'].'&longitude='.self::$body['longitude']
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
+    }
+
+    /**
      * @depends testCreateSpotSuccessful
      */
     public function testGetLevelOfOccupationSuccessful(mixed $spot)

@@ -77,4 +77,27 @@ class ParkingServiceTest extends BaseIntegrationTestCase
         self::assertEquals('Gora Aparcamientos', $parkings[1]->getName());
         self::assertEquals(new Location(-21.367, 7.849), $parkings[1]->getLocation());
     }
+
+    public function testFindClosestParkings()
+    {
+        $parkings = $this->parkingService->findClosestParkings(new Location(43.111, -5.919));
+        self::assertEquals(1, count($parkings->toArray()));
+        self::assertEquals($this->parkingId, $parkings->toArray()[0]->getId());
+        self::assertEquals('Parking Salesas', $parkings->toArray()[0]->getName());
+        self::assertEquals(new Location(43.367, -5.849), $parkings->toArray()[0]->getLocation());
+        $parking = new Parking();
+        $parking->setName('Gora Aparcamientos');
+        $parking->setAddress('Vía Salada 98');
+        $parking->setBookingFare(3.5);
+        $parking->setStayFare(0.11);
+        $parking->setLocation(new Location(43.111, -5.919));
+        $this->parkingService->create($parking);
+        $parkings = $this->parkingService->findClosestParkings(new Location(43.111, -5.919));
+        self::assertEquals(2, count($parkings->toArray()));
+        self::assertEquals($this->parkingId, $parkings->toArray()[1]->getId());
+        self::assertEquals('Parking Salesas', $parkings->toArray()[1]->getName());
+        self::assertEquals(new Location(43.367, -5.849), $parkings->toArray()[1]->getLocation());
+        self::assertEquals('Gora Aparcamientos', $parkings->toArray()[0]->getName());
+        self::assertEquals(new Location(43.111, -5.919), $parkings->toArray()[0]->getLocation());
+    }
 }

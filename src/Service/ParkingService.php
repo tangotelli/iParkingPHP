@@ -34,7 +34,10 @@ class ParkingService
     public function findClosestParkings(Location $location)
     {
         $queryBuilder = $this->documentManager->createQueryBuilder(Parking::class);
-        $queryBuilder->field('location')->near($location->getLatitude(), $location->getLongitude());
+        $queryBuilder
+            ->field('location')->near($location->getLatitude(), $location->getLongitude())
+            ->limit(5);
+
         return $queryBuilder->getQuery()->execute();
     }
 }
