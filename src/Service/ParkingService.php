@@ -35,7 +35,7 @@ class ParkingService
     {
         $queryBuilder = $this->documentManager->createQueryBuilder(Parking::class);
         $queryBuilder
-            ->field('location')->near($location->getLatitude(), $location->getLongitude())
+            ->field('location')->near($location->getLongitude(), $location->getLatitude())
             ->limit(5);
 
         return $queryBuilder->getQuery()->execute();
