@@ -84,6 +84,21 @@ class ParkingControllerTest extends BaseWebTestCase
     /**
      * @depends testCreateSuccessful
      */
+    public function testGetLevelOfOccupationSuccessfulNoSpots(string $parkingId)
+    {
+        self::$client->request(
+            Request::METHOD_GET,
+            '/parking/occupation/'.$parkingId
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
+
+        return $parkingId;
+    }
+
+    /**
+     * @depends testGetLevelOfOccupationSuccessfulNoSpots
+     */
     public function testCreateSpotSuccessful(string $parkingId)
     {
         $spotBody = [

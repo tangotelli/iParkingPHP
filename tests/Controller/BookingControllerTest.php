@@ -103,6 +103,90 @@ class BookingControllerTest extends BaseWebTestCase
         self::assertEquals($this->vehicle->getNickname(), $booking['Vehicle']);
         self::assertEquals($this->user->getEmail(), $booking['User']);
         self::assertEquals($this->parking->getBookingFare(), $booking['Price']);
+
+        return $booking;
+    }
+
+    public function testBookSpotUnsuccessfulWrongUser()
+    {
+        $body = [
+            'parkingId' => $this->parking->getId(),
+            'email' => '1',
+            'vehicle' => $this->vehicle->getNickname(),
+        ];
+        self::$client->request(
+            Request::METHOD_POST,
+            '/booking/new',
+            [],
+            [],
+            [],
+            strval(json_encode($body))
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+    }
+
+    public function testBookSpotUnsuccessfulWrongVehicle()
+    {
+        $body = [
+            'parkingId' => $this->parking->getId(),
+            'email' => $this->user->getEmail(),
+            'vehicle' => '1',
+        ];
+        self::$client->request(
+            Request::METHOD_POST,
+            '/booking/new',
+            [],
+            [],
+            [],
+            strval(json_encode($body))
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+    }
+
+    /**
+     * @depends testBookSpotSuccessful
+     */
+    public function testBookSpotUnsuccessfulForbidden(mixed $booking)
+    {
+        $body = [
+            'parkingId' => $booking['Parking Id'],
+            'email' => $booking['User'],
+            'vehicle' => $booking['Vehicle'],
+        ];
+        self::$client->request(
+            Request::METHOD_POST,
+            '/booking/new',
+            [],
+            [],
+            [],
+            strval(json_encode($body))
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
+    }
+
+    /**
+     * @depends testBookSpotSuccessful
+     */
+    public function testBookSpotUnsuccesfulNoSpot(mixed $booking)
+    {
+        $body = [
+            'parkingId' => $booking['Parking Id'],
+            'email' => $this->user->getEmail(),
+            'vehicle' => $this->vehicle->getNickname(),
+        ];
+        self::$client->request(
+            Request::METHOD_POST,
+            '/booking/new',
+            [],
+            [],
+            [],
+            strval(json_encode($body))
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_PRECONDITION_FAILED, $response->getStatusCode());
     }
 
     public static function tearDownAfterClass(): void

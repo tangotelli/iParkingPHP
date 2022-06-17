@@ -157,6 +157,16 @@ class VehicleControllerTest extends BaseWebTestCase
         return $vehicleId;
     }
 
+    public function testFindByUserUnsuccessful()
+    {
+        self::$client->request(
+            Request::METHOD_GET,
+            '/vehicle/get/1'
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+    }
+
     /**
      * @depends testFindByUserSuccessful
      */

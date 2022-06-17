@@ -109,6 +109,66 @@ class StayControllerTest extends BaseWebTestCase
         return $stay;
     }
 
+    public function testBeginStayUnsuccessfulWrongUser()
+    {
+        $body = [
+            'parkingId' => $this->parking->getId(),
+            'email' => '1',
+            'vehicle' => $this->vehicle->getNickname(),
+        ];
+        self::$client->request(
+            Request::METHOD_POST,
+            '/stay/new',
+            [],
+            [],
+            [],
+            strval(json_encode($body))
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+    }
+
+    public function testBeginStayUnsuccessfulWrongVehicle()
+    {
+        $body = [
+            'parkingId' => $this->parking->getId(),
+            'email' => $this->user->getEmail(),
+            'vehicle' => '1',
+        ];
+        self::$client->request(
+            Request::METHOD_POST,
+            '/stay/new',
+            [],
+            [],
+            [],
+            strval(json_encode($body))
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+    }
+
+    /**
+     * @depends testBeginStaySuccessful
+     */
+    public function testBeginStayUnsuccessfulForbidden(mixed $stay)
+    {
+        $body = [
+            'parkingId' => $stay['Parking Id'],
+            'email' => $stay['User'],
+            'vehicle' => $stay['Vehicle'],
+        ];
+        self::$client->request(
+            Request::METHOD_POST,
+            '/stay/new',
+            [],
+            [],
+            [],
+            strval(json_encode($body))
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_FORBIDDEN, $response->getStatusCode());
+    }
+
     /**
      * @depends testBeginStaySuccessful
      */
@@ -130,6 +190,26 @@ class StayControllerTest extends BaseWebTestCase
         self::assertEquals($stay['User'], $responseStay['User']);
 
         return $stay;
+    }
+
+    public function testFindStayByUserUnsuccesfulWrongUser()
+    {
+        self::$client->request(
+            Request::METHOD_GET,
+            '/stay/get?email=1'
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+    }
+
+    public function testFindStayByUserUnsuccesfulNoStay()
+    {
+        self::$client->request(
+            Request::METHOD_GET,
+            '/stay/get?email='.$this->user->getEmail()
+        );
+        $response = self::$client->getResponse();
+        self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
     }
 
     /**
@@ -194,7 +274,7 @@ class StayControllerTest extends BaseWebTestCase
     {
         self::$client->request(
             Request::METHOD_PUT,
-            '/stay/end/1'
+            '/stay/resume/1'
         );
         $response = self::$client->getResponse();
         self::assertEquals(Response::HTTP_NOT_FOUND, $response->getStatusCode());
